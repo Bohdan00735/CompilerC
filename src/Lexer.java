@@ -1,3 +1,5 @@
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Lexer {
@@ -12,13 +14,13 @@ public class Lexer {
     }
 
     public ArrayList<Token> decomposeTextOnTokens(){
-        String text =
+        String text = readFile();
         ArrayList<Token> tokensText = new ArrayList<>();
-        String[] decomposedText = text.split("\n\r");
+        String[] decomposedText = text.split("\r\n");
         for (int i = 0; i < decomposedText.length; i++) {
             String[] decomposedLine = decomposedText[i].split(" ");
             for (int j = 0; j < decomposedLine.length; j++) {
-                tokensText.add(determineToken(decomposedLine[i], i));
+                tokensText.add(determineToken(decomposedLine[j], i));
             }
         }
         return tokensText;

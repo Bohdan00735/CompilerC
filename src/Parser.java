@@ -24,8 +24,14 @@ public class Parser {
             if (current.type == KeyWords.INT || current.type == KeyWords.FLOAT){
                 Token next = tokenIterator.next();
                 switch (next.type){
-                    case MAIN: mainAst = analiseFunction(current.type, null, next, tokenIterator);
-                    case LINE: functionsAst.put(current.marking, analiseFunction(current.type, mainAst.getRoot(), next, tokenIterator));
+                    case MAIN:
+                        mainAst = analiseFunction(current.type, null, next, tokenIterator);
+                        continue;
+
+                    case LINE:
+                        functionsAst.put(current.marking, analiseFunction(current.type, mainAst.getRoot(), next, tokenIterator));
+                        continue;
+
                         //TODO for param
                     default: throw new SyntaxError(String.format("Error syntax after type in raw %d",next.line));
                 }
@@ -39,19 +45,22 @@ public class Parser {
     }
 
     private AST analiseFunction(KeyWords returnType,Node parentNode, Token startToken, Iterator<Token> tokenIterator) {
-        Node root =  new Function(startToken, parentNode, returnType, startToken.marking, analiseInput(tokenIterator));
+        Function root =  new Function(startToken, parentNode, returnType, startToken.marking, analiseInput(tokenIterator));
         while (tokenIterator.hasNext()){
             Token currentToken = tokenIterator.next();
             switch (currentToken.type){
                 case RETURN:
-                    formReturn(tokenIterator, root);
+                    root.addChildNode(formReturn(tokenIterator, root));
+                    break;
             }
         }
-        return null;
+        return new AST(root);
     }
 
-    Map<KeyWords, String> analiseInput(Iterator<Token> tokenIterator){
+    private Map<KeyWords, String> analiseInput(Iterator<Token> tokenIterator){
         Map<KeyWords, String> inputs = new HashMap<>();
+        tokenIterator.next();
+        //TODO when added more than main func
         while (tokenIterator.hasNext()){
             Token currentToken = tokenIterator.next();
             if (currentToken.type == KeyWords.RPAR){return inputs;}
@@ -63,26 +72,28 @@ public class Parser {
                     }else{
                         throw new SyntaxError(String.format("name of param missed, raw %d", nextToken.line));
                     }
+                    continue;
                 case FLOAT:
 
                     if (isNextWord(nextToken) != null){inputs.put(KeyWords.INT,nextToken.marking);
                     }else{
                         throw new SyntaxError(String.format("name of param missed, raw %d", nextToken.line));
                     }
-                default: throw new SyntaxError(String.format("Error param in row %d", nextToken.line));
+
+
             }
 
         }return null;
 
     }
 
-    private Node formReturn(Iterator<Token> tokenIterator, Node parent){
+    private Node formReturn(Iterator<Token> tokenIterator, Function parent){
         while (tokenIterator.hasNext()){
             Token token = tokenIterator.next();
             switch (token.type){
                 case NUM:
                     checkForEnd(tokenIterator);
-                    return new Node(new Num(KeyWords.NUM, token.marking, token.line, parent.getToken().type), parent);
+                    return new Node(new Num(KeyWords.RETURN, token.marking, token.line, parent.returnType), parent);
                 default: throw new SyntaxError(String.format("Error return in row %d", token.line));
             }
         }
@@ -101,7 +112,7 @@ public class Parser {
     }
 
 
-    public Boolean isNextWord(Token token){
+    private Boolean isNextWord(Token token){
 
         if (token.type == KeyWords.LINE) {
             return token.marking.split(" ").length == 1;

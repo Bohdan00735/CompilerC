@@ -3,11 +3,11 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class  CodeGenerator {
-    AST ast;
+    private AST ast;
     private String asmCode;
-    HashMap<String, AST> functionsAst;
+    private HashMap<String, AST> functionsAst;
 
-    private String masmTemplate =".586\n" +
+    String masmTemplate =".586\n" +
             ".model flat, stdcall\n" +
             "option casemap :none ;to distinguish between uppercase and lowercase letters\n" +
             "include \\masm32\\include\\windows.inc\n" +
@@ -27,7 +27,7 @@ public class  CodeGenerator {
         if (ast == null){
             throw new SyntaxError("main not found");
         }
-        if (functionsAst != null){
+        if (functionsAst.size() > 0){
             //analise and create functions from functionsAst
         }
         else {
@@ -38,7 +38,7 @@ public class  CodeGenerator {
         }
     }
 
-    public String configMain(){
+    private  String configMain(){
         String function = "main: \n";
         for (Node child:ast.getRoot().getChildNodes()
              ) {

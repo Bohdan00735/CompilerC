@@ -22,4 +22,8 @@ public class Node {
     public void addChildNode(Token child){
         childNodes.add(new Node(child, this));
     }
+
+    public void addChildNode(Node child){
+        childNodes.add(child);
+    }
 }
