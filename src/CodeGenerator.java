@@ -13,7 +13,7 @@ public class  CodeGenerator {
             "include \\masm32\\include\\windows.inc\n" +
             "include D:\\masm32\\include\\kernel32.inc\n" +
             "include D:\\masm32\\include\\user32.inc\n" +
-            "include module.inc\n" +
+            "include masmSources\\module.inc\n" +
             "includelib D:\\masm32\\lib\\kernel32.lib\n" +
             "includelib D:\\masm32\\lib\\user32.lib";
 

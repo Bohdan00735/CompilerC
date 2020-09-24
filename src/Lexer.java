@@ -11,7 +11,7 @@ public class Lexer {
         konverter = new Konverter();
     }
 
-    private ArrayList<Token> decomposeTextOnTokens(String text){
+    public ArrayList<Token> decomposeTextOnTokens(String text){
         ArrayList<Token> tokensText = new ArrayList<>();
         String[] decomposedText = text.split("\n\r");
         for (int i = 0; i < decomposedText.length; i++) {
