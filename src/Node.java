@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class Node {
-    ArrayList<Node> childNodes;
+    private ArrayList<Node> childNodes;
     Token thisToken;
     Node parentNode;
 
@@ -11,7 +11,9 @@ public class Node {
         childNodes = new ArrayList<>();
     }
 
-
+    public ArrayList<Node> getChildNodes() {
+        return childNodes;
+    }
 
     public void addChildNode(Token child){
         childNodes.add(new Node(child, this));
