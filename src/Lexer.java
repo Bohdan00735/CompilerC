@@ -11,7 +11,8 @@ public class Lexer {
         konverter = new Konverter();
     }
 
-    public ArrayList<Token> decomposeTextOnTokens(String text){
+    public ArrayList<Token> decomposeTextOnTokens(){
+        String text =
         ArrayList<Token> tokensText = new ArrayList<>();
         String[] decomposedText = text.split("\n\r");
         for (int i = 0; i < decomposedText.length; i++) {
@@ -21,6 +22,19 @@ public class Lexer {
             }
         }
         return tokensText;
+    }
+
+    private String readFile(){
+        String text = "";
+        try (FileReader reader = new FileReader(file)) {
+            int symb;
+            while ((symb = reader.read()) != -1) {
+                text += (char) symb;
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return text;
     }
 
     private Token determineToken(String component, int row){
