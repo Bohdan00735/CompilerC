@@ -1,6 +1,8 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 
-public class CodeGenerator {
+public class  CodeGenerator {
     AST ast;
     private String asmCode;
     HashMap<String, AST> functionsAst;
@@ -22,12 +24,25 @@ public class CodeGenerator {
     }
 
     public String configMain(){
-        
+
         return null;
     }
 
     public String writeFunc(){
         //TODO
         return null;
+    }
+
+    public boolean createFile(String fileName){
+        try(FileWriter writer = new FileWriter(fileName, false))
+        {
+            writer.write(asmCode);
+            writer.flush();
+            return true;
+        }
+        catch(IOException ex){
+            System.out.println(ex.getMessage());
+            return false;
+        }
     }
 }
