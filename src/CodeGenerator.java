@@ -23,17 +23,31 @@ public class  CodeGenerator {
     }
 
     public void generateCode(){
+        asmCode+= masmTemplate;
+        if (ast == null){
+            throw new SyntaxError("main not found");
+        }
         if (functionsAst != null){
             //analise and create functions from functionsAst
         }
         else {
+            asmCode += ".code \n";
             //build main proc
+            asmCode+=configMain();
+            asmCode+= "end main";
         }
     }
 
     public String configMain(){
-
-        return null;
+        String function = "main: \n";
+        for (Node child:ast.getRoot().getChildNodes()
+             ) {
+            if(child.getToken().type == KeyWords.RETURN){
+                function += String.format("mov ebx, %s\nret\n", child.getToken().marking);
+                break;
+            }
+        }
+        return function;
     }
 
     public String writeFunc(){

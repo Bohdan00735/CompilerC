@@ -18,13 +18,15 @@ public class Parser {
     }
 
     public AST parse(){
+        functionsAst = new HashMap<>();
         for (Iterator<Token> tokenIterator = tokens.iterator(); tokenIterator.hasNext();){
             Token current = tokenIterator.next();
             if (current.type == KeyWords.INT || current.type == KeyWords.FLOAT){
                 Token next = tokenIterator.next();
                 switch (next.type){
                     case MAIN: mainAst = analiseFunction(current.type, null, next, tokenIterator);
-                    case LINE: //will create a param or func
+                    case LINE: functionsAst.put(current.marking, analiseFunction(current.type, mainAst.getRoot(), next, tokenIterator));
+                        //TODO for param
                     default: throw new SyntaxError(String.format("Error syntax after type in raw %d",next.line));
                 }
 
@@ -80,7 +82,7 @@ public class Parser {
             switch (token.type){
                 case NUM:
                     checkForEnd(tokenIterator);
-                    return new Node(new Num(KeyWords.NUM, token.marking, token.line, parent.thisToken.type), parent);
+                    return new Node(new Num(KeyWords.NUM, token.marking, token.line, parent.getToken().type), parent);
                 default: throw new SyntaxError(String.format("Error return in row %d", token.line));
             }
         }

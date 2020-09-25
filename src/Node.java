@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Node {
     private ArrayList<Node> childNodes;
-    Token thisToken;
+    private Token thisToken;
     Node parentNode;
 
     public Node(Token thisToken, Node parentNode) {
@@ -13,6 +13,10 @@ public class Node {
 
     public ArrayList<Node> getChildNodes() {
         return childNodes;
+    }
+
+    public Token getToken() {
+        return thisToken;
     }
 
     public void addChildNode(Token child){
