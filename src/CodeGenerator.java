@@ -38,6 +38,7 @@ public class  CodeGenerator {
         }
     }
 
+
     private  String configMain(){
         String function = "main: \n";
         for (Node child:ast.getRoot().getChildNodes()
