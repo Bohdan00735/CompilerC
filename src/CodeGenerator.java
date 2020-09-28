@@ -13,9 +13,8 @@ public class  CodeGenerator {
             "include \\masm32\\include\\windows.inc\n" +
             "include D:\\masm32\\include\\kernel32.inc\n" +
             "include D:\\masm32\\include\\user32.inc\n" +
-            "include masmSources\\module.inc\n" +
             "includelib D:\\masm32\\lib\\kernel32.lib\n" +
-            "includelib D:\\masm32\\lib\\user32.lib";
+            "includelib D:\\masm32\\lib\\user32.lib\n";
 
     public CodeGenerator(AST ast, HashMap<String, AST> functionsAst) {
         this.ast = ast;
@@ -23,6 +22,7 @@ public class  CodeGenerator {
     }
 
     public void generateCode(){
+        asmCode="";
         asmCode+= masmTemplate;
         if (ast == null){
             throw new SyntaxError("main not found");
@@ -31,7 +31,7 @@ public class  CodeGenerator {
             //analise and create functions from functionsAst
         }
         else {
-            asmCode += ".code \n";
+            asmCode += "\n .code \n";
             //build main proc
             asmCode+=configMain();
             asmCode+= "end main";
@@ -43,7 +43,13 @@ public class  CodeGenerator {
         for (Node child:ast.getRoot().getChildNodes()
              ) {
             if(child.getToken().type == KeyWords.RETURN){
-                function += String.format("mov ebx, %s\nret\n", child.getToken().marking);
+                Num num = (Num) child.getToken();
+                if (num.format == KeyWords.INT){function += String.format("mov ebx, %s\nret\n", num.marking);
+                }else {//get float
+                    int intBits = Float.floatToIntBits(Float.parseFloat(num.marking));
+                    String binary = Integer.toBinaryString(intBits)+"b";
+                    function += String.format("mov ebx, %s\nret\n", binary);
+                }
                 break;
             }
         }
