@@ -15,8 +15,8 @@ public class Konverter {
         keyWordsStringHashtable.put("char", KeyWords.CHAR);
         keyWordsStringHashtable.put( "float", KeyWords.FLOAT);
         keyWordsStringHashtable.put( ":", KeyWords.SEMICOLON);
-
-
+        keyWordsStringHashtable.put("!", KeyWords.EXCLAMATION_POINT);
+        keyWordsStringHashtable.put("+", KeyWords.PLUS);
     }
 
     public KeyWords konvert(String word){

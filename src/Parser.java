@@ -69,6 +69,7 @@ public class Parser {
                 case INT:
 
                     if (isNextWord(nextToken) != null){inputs.put(KeyWords.INT,nextToken.marking);
+
                     }else{
                         throw new SyntaxError(String.format("name of param missed, raw %d", nextToken.line));
                     }
@@ -88,27 +89,83 @@ public class Parser {
     }
 
     private Node formReturn(Iterator<Token> tokenIterator, Function parent){
+        if(isExpresion(tokenIterator)){
+            return analiseExpression(tokenIterator, new Expression(
+                    new Token(KeyWords.RETURN,"return", 0),parent, KeyWords.RETURN));
+        }
         while (tokenIterator.hasNext()){
             Token token = tokenIterator.next();
             switch (token.type){
                 case NUM:
-                    checkForEnd(tokenIterator);
-                    return new Node(new Num(KeyWords.RETURN, token.marking, token.line, parent.returnType), parent);
+                    if (checkForEnd(tokenIterator)){
+                        return new Node(new Num(KeyWords.RETURN, token.marking, token.line, parent.returnType), parent);}
+                    else {
+                        throw new SyntaxError(String.format("End symbol expected row %d", token.line));
+                    }
+
                 default: throw new SyntaxError(String.format("Error return in row %d", token.line));
             }
         }
         return null;
     }
 
+    private boolean isExpresion(Iterator<Token> tokenIterator) {
+        while (tokenIterator.hasNext()){
+            Token token = tokenIterator.next();
+            switch (token.type){
+                case NUM:
+                    isNextBin(tokenIterator);
+                    return true;
+                case EXCLAMATION_POINT:
+                    isNextNum(tokenIterator);
+            }
+        }
+        return false;
+    }
+
+    private void isNextNum(Iterator<Token> tokenIterator) {
+        if (tokenIterator.next().type != KeyWords.NUM){//add another checks
+            throw new SyntaxError(String.format("Binary operator Expected after num in raw %d", tokenIterator.next().line));
+        }
+    }
+
+    private Expression analiseExpression(Iterator<Token> tokenIterator, Expression parent) {
+        Token token = tokenIterator.next();
+        Token nextToken = tokenIterator.next();
+        switch (token.type){
+            case EXCLAMATION_POINT:
+
+                UnaryExpression unary = new UnaryExpression(token, parent, KeyWords.EXCLAMATION_POINT);
+                unary.setChildExpression(analiseExpression(tokenIterator, unary));
+                return unary;
+            case NUM:
+                try {
+                    isNextBin(tokenIterator);
+                    
+                }catch (SyntaxError er){
+                    parent.addTerm((Num) token);
+                    return null;
+                }
+        }
+
+        return null;
+    }
+
+    private void isNextBin(Iterator<Token> tokenIterator) {
+        if (tokenIterator.next().type != KeyWords.PLUS){//add another checks
+            throw new SyntaxError(String.format("Binary operator Expected after num in raw %d", tokenIterator.next().line));
+        }
+    }
+
     private void analiseAssigment(Node parentNode){
         //there will be analise of assigment
     }
 
-    private void checkForEnd(Iterator<Token> tokenIterator){
+    private Boolean checkForEnd(Iterator<Token> tokenIterator){
         Token symbol = tokenIterator.next();
         if (symbol.type != KeyWords.SEMICOLON && tokenIterator.next().type != KeyWords.RCBRAC){
-            throw new SyntaxError(String.format("Semicolon missed and } in row %d", symbol.line));
-        }
+            return true;
+        }return false;
     }
 
 

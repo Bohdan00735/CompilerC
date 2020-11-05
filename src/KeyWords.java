@@ -11,7 +11,10 @@ public enum KeyWords{
     CHAR,
     FLOAT,
     SEMICOLON,
-    LINE
+    LINE,
+    PLUS,
+    EXCLAMATION_POINT
+
 }
 
 

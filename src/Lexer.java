@@ -16,6 +16,7 @@ public class Lexer {
     public ArrayList<Token> decomposeTextOnTokens(){
         String text = readFile();
         ArrayList<Token> tokensText = new ArrayList<>();
+        addSpaces(text);
         String[] decomposedText = text.split("\r\n");
         for (int i = 0; i < decomposedText.length; i++) {
             String[] decomposedLine = decomposedText[i].split(" ");
@@ -24,6 +25,17 @@ public class Lexer {
             }
         }
         return tokensText;
+    }
+
+    private void addSpaces(String text) {
+        text.replace("{", " { ");
+        text.replace("}", " } ");
+        text.replace("(", " ( ");
+        text.replace(")", " ) ");
+        text.replace("!", " ! ");
+        text.replace("+", " + ");
+        text.replace(";", " ; ");
+
     }
 
     private String readFile(){
