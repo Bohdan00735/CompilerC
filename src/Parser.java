@@ -1,3 +1,5 @@
+import jdk.internal.org.jline.reader.SyntaxError;
+
 import javax.print.DocFlavor;
 import java.lang.reflect.Parameter;
 import java.security.Key;
@@ -8,10 +10,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.function.ToDoubleBiFunction;
 
-public class Parser {
+public class
+
+Parser {
     ArrayList<Token> tokens;
     AST mainAst;
     HashMap<String, AST> functionsAst;
+    Iterator<Token> tokenIterator;
 
     public Parser(ArrayList<Token> tokens) {
         this.tokens = tokens;
@@ -19,7 +24,7 @@ public class Parser {
 
     public AST parse(){
         functionsAst = new HashMap<>();
-        for (Iterator<Token> tokenIterator = tokens.iterator(); tokenIterator.hasNext();){
+        for (tokenIterator = tokens.iterator(); tokenIterator.hasNext();){
             Token current = tokenIterator.next();
             if (current.type == KeyWords.INT || current.type == KeyWords.FLOAT){
                 Token next = tokenIterator.next();
@@ -30,16 +35,13 @@ public class Parser {
 
                     case LINE:
                         functionsAst.put(current.marking, analiseFunction(current.type, mainAst.getRoot(), next, tokenIterator));
-                        continue;
 
                         //TODO for param
-                    default: throw new SyntaxError(String.format("Error syntax after type in raw %d",next.line));
                 }
 
+            }else {
+            throw new MySyntaxError(current.line, 0, "function or declaration expected");
             }
-            else if(current.type == KeyWords.RETURN) {
-
-            }else {/* Will added  another functional*/}
         }
         return mainAst;
     }
@@ -49,6 +51,8 @@ public class Parser {
         while (tokenIterator.hasNext()){
             Token currentToken = tokenIterator.next();
             switch (currentToken.type){
+                case INT:
+                    root.addChildNode(parseDeclaration(tokenIterator, root, currentToken.type));
                 case RETURN:
                     root.addChildNode(formReturn(tokenIterator, root));
                     break;
@@ -57,9 +61,35 @@ public class Parser {
         return new AST(root);
     }
 
+    private Node parseDeclaration(Iterator<Token> tokenIterator, Function root, KeyWords type) {
+        Token token = tokenIterator.next();
+        if (token.type != KeyWords.LINE){
+            throw new MySyntaxError(token.line, 1, "name expected");
+        }
+        String name = token.marking;
+        token = tokenIterator.next();
+        if (token.type != KeyWords.EQUALS){
+            throw new MySyntaxError(token.line, 2, "equals symbol expected");
+        }
+        Node result;
+        if(isNextNum(tokenIterator)){
+            result = new Node(tokenIterator.next(),root);
+        }else {
+            result = new Node(new Num(type, name, token.line, token.column),root);
+            result.addChildNode(analiseMathExpresion(tokenIterator));
+        }
+
+        if (tokenIterator.next().type != KeyWords.SEMICOLON){
+            throw new MySyntaxError(token.line, -1,"Semicolon expected at the end of declaration");
+        }
+        return result;
+    }
+
+
     private Map<KeyWords, String> analiseInput(Iterator<Token> tokenIterator){
         Map<KeyWords, String> inputs = new HashMap<>();
         tokenIterator.next();
+        int column = 0;
         //TODO when added more than main func
         while (tokenIterator.hasNext()){
             Token currentToken = tokenIterator.next();
@@ -71,18 +101,19 @@ public class Parser {
                     if (isNextWord(nextToken) != null){inputs.put(KeyWords.INT,nextToken.marking);
 
                     }else{
-                        throw new SyntaxError(String.format("name of param missed, raw %d", nextToken.line));
+                        throw new MySyntaxError( nextToken.line,column,"name of param missed");
                     }
                     continue;
                 case FLOAT:
 
                     if (isNextWord(nextToken) != null){inputs.put(KeyWords.INT,nextToken.marking);
                     }else{
-                        throw new SyntaxError(String.format("name of param missed, raw %d", nextToken.line));
+                        throw new MySyntaxError(nextToken.line,column,"name of param missed");
                     }
 
 
             }
+            column++;
 
         }return null;
 
@@ -91,19 +122,20 @@ public class Parser {
     private Node formReturn(Iterator<Token> tokenIterator, Function parent){
         if(isExpresion(tokenIterator)){
             return analiseExpression(tokenIterator, new Expression(
-                    new Token(KeyWords.RETURN,"return", 0),parent, KeyWords.RETURN));
+                    new Token(KeyWords.RETURN,"return", 0,0),parent, KeyWords.RETURN));
         }
         while (tokenIterator.hasNext()){
             Token token = tokenIterator.next();
+            int column = 0;
             switch (token.type){
                 case NUM:
                     if (checkForEnd(tokenIterator)){
-                        return new Node(new Num(KeyWords.RETURN, token.marking, token.line, parent.returnType), parent);}
+                        return new Node(new Num(KeyWords.RETURN, token.marking, token.line, token.column,parent.returnType), parent);}
                     else {
-                        throw new SyntaxError(String.format("End symbol expected row %d", token.line));
+                        throw new MySyntaxError(token.line,column,("End symbol expected row %d"));
                     }
 
-                default: throw new SyntaxError(String.format("Error return in row %d", token.line));
+                default: throw new MySyntaxError(token.line,column,"Error return in row %d");
             }
         }
         return null;
@@ -123,38 +155,64 @@ public class Parser {
         return false;
     }
 
-    private void isNextNum(Iterator<Token> tokenIterator) {
-        if (tokenIterator.next().type != KeyWords.NUM){//add another checks
-            throw new SyntaxError(String.format("Binary operator Expected after num in raw %d", tokenIterator.next().line));
-        }
+    private boolean isNextNum(Iterator<Token> tokenIterator) {
+        return tokenIterator.next().type == KeyWords.NUM;
     }
 
     private Expression analiseExpression(Iterator<Token> tokenIterator, Expression parent) {
+        int column = 0;
         Token token = tokenIterator.next();
-        Token nextToken = tokenIterator.next();
-        switch (token.type){
-            case EXCLAMATION_POINT:
-
-                UnaryExpression unary = new UnaryExpression(token, parent, KeyWords.EXCLAMATION_POINT);
-                unary.setChildExpression(analiseExpression(tokenIterator, unary));
-                return unary;
-            case NUM:
-                try {
-                    isNextBin(tokenIterator);
-                    
-                }catch (SyntaxError er){
-                    parent.addTerm((Num) token);
-                    return null;
-                }
+        if (token.type == KeyWords.FLOAT || token.type == KeyWords.INT){
+            KeyWords type = token.type;
+            token = tokenIterator.next();
+            column++;
+            if (token.type != KeyWords.LINE){
+                throw new MySyntaxError(token.line, column,"Name in declare expected");
+            }
         }
-
         return null;
     }
 
-    private void isNextBin(Iterator<Token> tokenIterator) {
-        if (tokenIterator.next().type != KeyWords.PLUS){//add another checks
-            throw new SyntaxError(String.format("Binary operator Expected after num in raw %d", tokenIterator.next().line));
+
+    private Term analiseMathExpresion(Iterator<Token> tokenIterator){
+        Term term = parseTerm(tokenIterator);
+        Token next = tokenIterator.next();
+        while (next.type == KeyWords.PLUS){
+            Term nextTerm = parseTerm(tokenIterator);
+            term = new BinaryExpression(term, next.type, nextTerm);
+            next = tokenIterator.next();
         }
+        return term;
+    }
+
+    private Term parseTerm(Iterator<Token> tokenIterator) {
+        Term result;
+        Token next = tokenIterator.next();
+        switch (next.type){
+            case LCBRAC:
+                result = parseTerm(tokenIterator);
+                next = tokenIterator.next();
+                if (next.type != KeyWords.RCBRAC){
+                    throw new MySyntaxError(next.line, next.column, "Close brace expected");
+                }
+                return result;
+            case EXCLAMATION_POINT:
+                result = new Term(next);
+                result.setExpression(new UnaryExpression(next.type,parseTerm(tokenIterator)));
+                return result;
+            case NUM:
+                return new Term(next);
+            default:
+                throw new MySyntaxError(next.line, next.column, "Some term expected");
+        }
+    }
+
+    private boolean isEndLine(Iterator<Token> tokenIterator) {
+        return tokenIterator.next().type == KeyWords.EXCLAMATION_POINT;
+    }
+
+    private boolean isNextBin(Iterator<Token> tokenIterator) {
+        return tokenIterator.next().type != KeyWords.PLUS;
     }
 
     private void analiseAssigment(Node parentNode){

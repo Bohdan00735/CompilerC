@@ -1,28 +1,24 @@
 public class UnaryExpression extends Expression {
-    Expression childExpression;
-    Num constant;
+    Term childTerm;
 
-    public UnaryExpression(Token thisToken, Node parentNode, KeyWords operator, Expression childExpression) {
+    public UnaryExpression(Token thisToken, Node parentNode, KeyWords operator, Term childTerm) {
         super(thisToken, parentNode, operator);
-        this.childExpression = childExpression;
+        this.childTerm = childTerm;
     }
 
-    public UnaryExpression(Token thisToken, Node parentNode, KeyWords operator, Num constant) {
-        super(thisToken, parentNode, operator);
-        this.constant = constant;
+    public UnaryExpression(KeyWords operator, Term childTerm) {
+        super(operator);
+        this.childTerm = childTerm;
     }
 
     public UnaryExpression(Token thisToken, Node parentNode, KeyWords operator) {
         super(thisToken, parentNode, operator);
     }
 
-    public void setChildExpression(Expression childExpression) {
-        this.childExpression = childExpression;
+    public void addChildTerm(Term childTerm) {
+        this.childTerm = childTerm;
     }
 
-    @Override
-    public void addTerm(Num num) {
-        this.constant = num;
-    }
+
 }
 

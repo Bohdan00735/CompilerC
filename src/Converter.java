@@ -1,9 +1,9 @@
 import java.util.Hashtable;
 
-public class Konverter {
+public class Converter {
     Hashtable< String, KeyWords> keyWordsStringHashtable = new Hashtable<>();
 
-    public Konverter() {
+    public Converter() {
         keyWordsStringHashtable.put("int", KeyWords.INT);
         keyWordsStringHashtable.put( "main", KeyWords.MAIN);
         keyWordsStringHashtable.put( "(", KeyWords.LPAR);
@@ -14,14 +14,15 @@ public class Konverter {
         keyWordsStringHashtable.put( "num", KeyWords.NUM);
         keyWordsStringHashtable.put("char", KeyWords.CHAR);
         keyWordsStringHashtable.put( "float", KeyWords.FLOAT);
-        keyWordsStringHashtable.put( ":", KeyWords.SEMICOLON);
+        keyWordsStringHashtable.put( ";", KeyWords.SEMICOLON);
         keyWordsStringHashtable.put("!", KeyWords.EXCLAMATION_POINT);
         keyWordsStringHashtable.put("+", KeyWords.PLUS);
+        keyWordsStringHashtable.put("=", KeyWords.EQUALS);
     }
 
-    public KeyWords konvert(String word){
+    public KeyWords convert(String word, int row){
         KeyWords keyWord = keyWordsStringHashtable.get(word);
-        if (keyWord == null){throw new SyntaxError(String.format("No such keyword as %s", word));}
+        if (keyWord == null){throw new MySyntaxError(row, 0, String.format("No such keyword as %s", word));}
         return keyWord;
     }
 }

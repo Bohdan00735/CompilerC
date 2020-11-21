@@ -11,6 +11,14 @@ public class Node {
         childNodes = new ArrayList<>();
     }
 
+    public Node(Token thisToken) {
+        this.thisToken = thisToken;
+        childNodes = new ArrayList<>();
+    }
+
+    public Node() {
+    }
+
     public ArrayList<Node> getChildNodes() {
         return childNodes;
     }

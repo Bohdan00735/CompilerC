@@ -13,7 +13,8 @@ public enum KeyWords{
     SEMICOLON,
     LINE,
     PLUS,
-    EXCLAMATION_POINT
+    EXCLAMATION_POINT,
+    EQUALS
 
 }
 

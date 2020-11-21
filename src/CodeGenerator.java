@@ -25,7 +25,7 @@ public class  CodeGenerator {
         asmCode="";
         asmCode+= masmTemplate;
         if (ast == null){
-            throw new SyntaxError("main not found");
+            throw new MySyntaxError(0,0, "main not found");
         }
         if (functionsAst.size() > 0){
             //analise and create functions from functionsAst

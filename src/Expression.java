@@ -1,4 +1,4 @@
-public class Expression extends Node {
+public class Expression extends Term {
     private KeyWords operator;
 
     public Expression(Token thisToken, Node parentNode, KeyWords operator) {
@@ -6,5 +6,16 @@ public class Expression extends Node {
         this.operator = operator;
     }
 
-    public void addTerm(Num num){};
+    public Expression(KeyWords operator) {
+        this.operator = operator;
+    }
+
+    public Expression(Token thisToken, Node parentNode) {
+        super(thisToken, parentNode);
+    }
+
+    public String formAction(){
+        return  null;
+    }
+
 }

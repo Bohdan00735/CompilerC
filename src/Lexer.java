@@ -5,12 +5,12 @@ import java.util.ArrayList;
 public class Lexer {
     String file;
     ArrayList<Token> tokens;
-    Konverter konverter;
+    Converter converter;
 
     public Lexer(String file) {
         this.file = file;
         tokens = new ArrayList<>();
-        konverter = new Konverter();
+        converter = new Converter();
     }
 
     public ArrayList<Token> decomposeTextOnTokens(){
@@ -21,7 +21,7 @@ public class Lexer {
         for (int i = 0; i < decomposedText.length; i++) {
             String[] decomposedLine = decomposedText[i].split(" ");
             for (int j = 0; j < decomposedLine.length; j++) {
-                tokensText.add(determineToken(decomposedLine[j], i));
+                tokensText.add(determineToken(decomposedLine[j], i, j));
             }
         }
         return tokensText;
@@ -51,15 +51,15 @@ public class Lexer {
         return text;
     }
 
-    private Token determineToken(String component, int row){
+    private Token determineToken(String component, int row, int column){
 
         try{
-            return new Token(konverter.konvert(component), component, row);
-        }catch (SyntaxError error){
+            return new Token(converter.convert(component, row), component, row, column);
+        }catch (MySyntaxError error){
             if (isNumeric(component)) {
-                return new Num(KeyWords.NUM, component, row);
+                return new Num(KeyWords.NUM, component, row, column);
             }
-        }return new Word(KeyWords.ID, component, row);
+        }return new Word(KeyWords.ID, component, row, column);
     }
 
     public static boolean isNumeric(String strNum) {
