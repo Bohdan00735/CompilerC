@@ -19,6 +19,9 @@ public class UnaryExpression extends Expression {
         this.childTerm = childTerm;
     }
 
-
+    @Override
+    public String generateCode() {
+        return childTerm.generateCode() + "\n\r not eax;";
+    }
 }
 

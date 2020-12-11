@@ -1,9 +1,13 @@
-import jdk.internal.org.jline.reader.SyntaxError;
 
-public class MySyntaxError extends SyntaxError {
-    String text;
+
+public class MySyntaxError  extends Error {
+    int line;
+    int column;
+
 
     public MySyntaxError(int line, int column, String message) {
-        super(line, column, message);
+        super(message);
+        this.line = line;
+        this.column = column;
     }
 }

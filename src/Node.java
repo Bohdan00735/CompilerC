@@ -34,4 +34,15 @@ public class Node {
     public void addChildNode(Node child){
         childNodes.add(child);
     }
+
+    public String generateCode() {
+        StringBuilder res = new StringBuilder();
+        if (thisToken.type == KeyWords.RETURN){
+            for (Node child:childNodes
+                 ) {
+                res.append(child.generateCode());
+            }
+        }
+        return res.toString() + "\n\r return eax;";
+    }
 }

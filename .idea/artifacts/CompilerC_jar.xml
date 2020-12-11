@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="CompilerC:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/CompilerC_jar</output-path>
-    <root id="archive" name="CompilerC.jar">
-      <element id="module-output" name="CompilerC" />
-    </root>
-  </artifact>
-</component>

@@ -1,14 +1,20 @@
-.586
-.model flat, stdcall
-option casemap :none ;to distinguish between uppercase and lowercase letters
-include \masm32\include\windows.inc
-include D:\masm32\include\kernel32.inc
-include D:\masm32\include\user32.inc
-includelib D:\masm32\lib\kernel32.lib
-includelib D:\masm32\lib\user32.lib
 
  .code 
 main: 
-mov ebx, 367
-ret
-end main
+
+ mov eax, 1000011000001110000000000000000b;
+ not eax;
+ mov ebx, eax; 
+
+ mov eax, 1000000110000000000000000000000b;
+ mov ebx, eax; 
+
+ mov eax, 1000000101000000000000000000000b;
+ not eax;
+ add eax,ebx 
+
+ add eax,ebx 
+
+ not eax;
+ return eax;
+ end main

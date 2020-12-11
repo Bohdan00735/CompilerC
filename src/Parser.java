@@ -1,4 +1,3 @@
-import jdk.internal.org.jline.reader.SyntaxError;
 
 import javax.print.DocFlavor;
 import java.lang.reflect.Parameter;
@@ -17,6 +16,7 @@ Parser {
     AST mainAst;
     HashMap<String, AST> functionsAst;
     Iterator<Token> tokenIterator;
+    int openedScopes = 0;
 
     public Parser(ArrayList<Token> tokens) {
         this.tokens = tokens;
@@ -54,7 +54,9 @@ Parser {
                 case INT:
                     root.addChildNode(parseDeclaration(tokenIterator, root, currentToken.type));
                 case RETURN:
-                    root.addChildNode(formReturn(tokenIterator, root));
+                    Node returnNode = new Node(currentToken, parentNode);
+                    returnNode.addChildNode(formReturn(tokenIterator, root));
+                    root.addChildNode(returnNode);
                     break;
             }
         }
@@ -75,8 +77,7 @@ Parser {
         if(isNextNum(tokenIterator)){
             result = new Node(tokenIterator.next(),root);
         }else {
-            result = new Node(new Num(type, name, token.line, token.column),root);
-            result.addChildNode(analiseMathExpresion(tokenIterator));
+            result = analiseMathExpresion(tokenIterator);
         }
 
         if (tokenIterator.next().type != KeyWords.SEMICOLON){
@@ -89,8 +90,7 @@ Parser {
     private Map<KeyWords, String> analiseInput(Iterator<Token> tokenIterator){
         Map<KeyWords, String> inputs = new HashMap<>();
         tokenIterator.next();
-        int column = 0;
-        //TODO when added more than main func
+
         while (tokenIterator.hasNext()){
             Token currentToken = tokenIterator.next();
             if (currentToken.type == KeyWords.RPAR){return inputs;}
@@ -101,44 +101,24 @@ Parser {
                     if (isNextWord(nextToken) != null){inputs.put(KeyWords.INT,nextToken.marking);
 
                     }else{
-                        throw new MySyntaxError( nextToken.line,column,"name of param missed");
+                        throw new MySyntaxError( nextToken.line,nextToken.column,"name of param missed");
                     }
                     continue;
                 case FLOAT:
 
                     if (isNextWord(nextToken) != null){inputs.put(KeyWords.INT,nextToken.marking);
                     }else{
-                        throw new MySyntaxError(nextToken.line,column,"name of param missed");
+                        throw new MySyntaxError(nextToken.line,nextToken.column,"name of param missed");
                     }
-
-
             }
-            column++;
 
         }return null;
 
     }
 
     private Node formReturn(Iterator<Token> tokenIterator, Function parent){
-        if(isExpresion(tokenIterator)){
-            return analiseExpression(tokenIterator, new Expression(
-                    new Token(KeyWords.RETURN,"return", 0,0),parent, KeyWords.RETURN));
-        }
-        while (tokenIterator.hasNext()){
-            Token token = tokenIterator.next();
-            int column = 0;
-            switch (token.type){
-                case NUM:
-                    if (checkForEnd(tokenIterator)){
-                        return new Node(new Num(KeyWords.RETURN, token.marking, token.line, token.column,parent.returnType), parent);}
-                    else {
-                        throw new MySyntaxError(token.line,column,("End symbol expected row %d"));
-                    }
+        return analiseMathExpresion(tokenIterator);
 
-                default: throw new MySyntaxError(token.line,column,"Error return in row %d");
-            }
-        }
-        return null;
     }
 
     private boolean isExpresion(Iterator<Token> tokenIterator) {
@@ -160,14 +140,14 @@ Parser {
     }
 
     private Expression analiseExpression(Iterator<Token> tokenIterator, Expression parent) {
-        int column = 0;
+
         Token token = tokenIterator.next();
         if (token.type == KeyWords.FLOAT || token.type == KeyWords.INT){
             KeyWords type = token.type;
             token = tokenIterator.next();
-            column++;
+
             if (token.type != KeyWords.LINE){
-                throw new MySyntaxError(token.line, column,"Name in declare expected");
+                throw new MySyntaxError(token.line, token.column,"Name in declare expected");
             }
         }
         return null;
@@ -181,27 +161,31 @@ Parser {
             Term nextTerm = parseTerm(tokenIterator);
             term = new BinaryExpression(term, next.type, nextTerm);
             next = tokenIterator.next();
+            if(next.type == KeyWords.RPAR){
+                if (openedScopes==0){
+                    throw new MySyntaxError(next.line, next.column, "Close brace not expected");
+                }
+                openedScopes -= 1;
+            }
         }
         return term;
     }
 
     private Term parseTerm(Iterator<Token> tokenIterator) {
-        Term result;
         Token next = tokenIterator.next();
         switch (next.type){
-            case LCBRAC:
-                result = parseTerm(tokenIterator);
-                next = tokenIterator.next();
-                if (next.type != KeyWords.RCBRAC){
-                    throw new MySyntaxError(next.line, next.column, "Close brace expected");
-                }
-                return result;
+            case LPAR:
+                openedScopes +=1;
+                return analiseMathExpresion(tokenIterator);
             case EXCLAMATION_POINT:
-                result = new Term(next);
-                result.setExpression(new UnaryExpression(next.type,parseTerm(tokenIterator)));
-                return result;
+                return new UnaryExpression(next.type,parseTerm(tokenIterator));
             case NUM:
-                return new Term(next);
+                return new Num(next);
+            case RPAR:
+                if (openedScopes==0){
+                    throw new MySyntaxError(next.line, next.column, "Close brace not expected");
+                }
+                openedScopes -=1 ;
             default:
                 throw new MySyntaxError(next.line, next.column, "Some term expected");
         }

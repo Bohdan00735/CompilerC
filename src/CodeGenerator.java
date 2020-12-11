@@ -23,7 +23,7 @@ public class  CodeGenerator {
 
     public void generateCode(){
         asmCode="";
-        asmCode+= masmTemplate;
+
         if (ast == null){
             throw new MySyntaxError(0,0, "main not found");
         }
@@ -34,27 +34,18 @@ public class  CodeGenerator {
             asmCode += "\n .code \n";
             //build main proc
             asmCode+=configMain();
-            asmCode+= "end main";
+            asmCode+= "\n\r end main";
         }
     }
 
 
     private  String configMain(){
-        String function = "main: \n";
+        StringBuilder function = new StringBuilder("main: \n");
         for (Node child:ast.getRoot().getChildNodes()
              ) {
-            if(child.getToken().type == KeyWords.RETURN){
-                Num num = (Num) child.getToken();
-                if (num.format == KeyWords.INT){function += String.format("mov ebx, %s\nret\n", num.marking);
-                }else {//get float
-                    int intBits = Float.floatToIntBits(Float.parseFloat(num.marking));
-                    String binary = Integer.toBinaryString(intBits)+"b";
-                    function += String.format("mov ebx, %s\nret\n", binary);
-                }
-                break;
-            }
+            function.append(child.generateCode());
         }
-        return function;
+        return function.toString();
     }
 
     public String writeFunc(){

@@ -10,5 +10,11 @@ public class BinaryExpression extends Expression {
         this.rightOperand = rightOperand;
     }
 
-
+    @Override
+    public String generateCode() {
+        return leftOperand.generateCode() +
+                "\n\r mov ebx, eax; \n\r" +
+                rightOperand.generateCode() +
+                "\n\r add eax,ebx \n\r";
+    }
 }

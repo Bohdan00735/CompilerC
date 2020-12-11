@@ -1,5 +1,4 @@
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 public class Lexer {
@@ -16,39 +15,41 @@ public class Lexer {
     public ArrayList<Token> decomposeTextOnTokens(){
         String text = readFile();
         ArrayList<Token> tokensText = new ArrayList<>();
-        addSpaces(text);
-        String[] decomposedText = text.split("\r\n");
+        text = addSpaces(text);
+        String[] decomposedText = text.split("\n");
         for (int i = 0; i < decomposedText.length; i++) {
             String[] decomposedLine = decomposedText[i].split(" ");
             for (int j = 0; j < decomposedLine.length; j++) {
+                if (decomposedLine[j].equals("")) continue;
                 tokensText.add(determineToken(decomposedLine[j], i, j));
             }
         }
         return tokensText;
     }
 
-    private void addSpaces(String text) {
-        text.replace("{", " { ");
-        text.replace("}", " } ");
-        text.replace("(", " ( ");
-        text.replace(")", " ) ");
-        text.replace("!", " ! ");
-        text.replace("+", " + ");
-        text.replace(";", " ; ");
-
+    private String addSpaces(String text) {
+        text = text.replace("{", " { ");
+        text = text.replace("}", " } ");
+        text = text.replace("(", " ( ");
+        text = text.replace(")", " ) ");
+        text = text.replace("!", "! ");
+        text = text.replace("+", " + ");
+        text = text.replace(";", " ; ");
+        return text;
     }
 
     private String readFile(){
-        String text = "";
-        try (FileReader reader = new FileReader(file)) {
+        StringBuilder text = new StringBuilder();
+        try {
+            InputStream inputStream = new FileInputStream(file);
             int symb;
-            while ((symb = reader.read()) != -1) {
-                text += (char) symb;
+            while ((symb = inputStream.read()) != -1) {
+                text.append((char) symb);
             }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        } catch (IOException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
         }
-        return text;
+        return text.toString();
     }
 
     private Token determineToken(String component, int row, int column){
@@ -57,7 +58,7 @@ public class Lexer {
             return new Token(converter.convert(component, row), component, row, column);
         }catch (MySyntaxError error){
             if (isNumeric(component)) {
-                return new Num(KeyWords.NUM, component, row, column);
+                return new Token(KeyWords.NUM, component, row, column);
             }
         }return new Word(KeyWords.ID, component, row, column);
     }

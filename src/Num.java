@@ -1,20 +1,17 @@
-public class Num extends Token {
+public class Num extends Term {
     KeyWords format;
     String name;
 
-    public Num(KeyWords type, String value, int line, int column) {
-        super(type, value, line, column);
-
+    public Num(Token thisToken, Node parentNode) {
+        super(thisToken, parentNode);
     }
 
-    public Num(KeyWords type, int line,int column, KeyWords format, String name) {
-        super(type, line, column);
-        this.format = format;
-        this.name = name;
+    public Num(Token thisToken) {
+        super(thisToken);
     }
 
-    public Num(KeyWords type, String marking, int line, int column, KeyWords format) {
-        super(type, marking, line, column);
+    public Num(Token thisToken, KeyWords format) {
+        super(thisToken);
         this.format = format;
     }
 
@@ -22,7 +19,15 @@ public class Num extends Token {
         this.name = name;
     }
 
-    public void setFormat(KeyWords format) {
-        this.format = format;
+    public Num() {
+    }
+
+    @Override
+    public String generateCode() {
+        String result = "\n\r mov eax, ";
+        int intBits = Float.floatToIntBits(Float.parseFloat(super.getToken().marking));
+        String binary = Integer.toBinaryString(intBits)+"b";
+
+        return  result + binary +";";
     }
 }
