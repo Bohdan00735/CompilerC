@@ -2,19 +2,33 @@
  .code 
 main: 
 
- mov eax, 1000011000001110000000000000000b;
- not eax;
- mov ebx, eax; 
+ push  135;
+ pop eax;
+cmp eax,0;
+sete al;
+push al;
 
- mov eax, 1000000110000000000000000000000b;
- mov ebx, eax; 
+ push  6;
+ push  5;
+ pop eax;
+cmp eax,0;
+sete al;
+push al;
 
- mov eax, 1000000101000000000000000000000b;
- not eax;
- add eax,ebx 
+ pop ebx;
+pop eax;
+add eax, ebx;
+ push eax; 
 
- add eax,ebx 
+ pop ebx;
+pop eax;
+add eax, ebx;
+ push eax; 
 
- not eax;
+ pop eax;
+cmp eax,0;
+sete al;
+push al;
+
  return eax;
  end main

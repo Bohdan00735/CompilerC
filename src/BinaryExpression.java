@@ -12,9 +12,17 @@ public class BinaryExpression extends Expression {
 
     @Override
     public String generateCode() {
-        return leftOperand.generateCode() +
-                "\n\r mov ebx, eax; \n\r" +
+        String result = leftOperand.generateCode() +
                 rightOperand.generateCode() +
-                "\n\r add eax,ebx \n\r";
+                "\n\r pop ebx;\n" +
+                "pop eax;\n\r";
+        switch (super.getOperator()){
+            case PLUS:
+                result+="add eax, ebx;";
+                break;
+                // will be added other binary operators
+        }
+        result+="\n\r push eax; \n\r";
+        return result;
     }
 }

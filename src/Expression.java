@@ -6,6 +6,10 @@ public class Expression extends Term {
         this.operator = operator;
     }
 
+    public KeyWords getOperator() {
+        return operator;
+    }
+
     public Expression(KeyWords operator) {
         this.operator = operator;
     }

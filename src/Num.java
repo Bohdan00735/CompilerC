@@ -24,10 +24,37 @@ public class Num extends Term {
 
     @Override
     public String generateCode() {
-        String result = "\n\r mov eax, ";
-        int intBits = Float.floatToIntBits(Float.parseFloat(super.getToken().marking));
-        String binary = Integer.toBinaryString(intBits)+"b";
+        String num = super.getToken().marking;
+        if (isNumerical(num)){return "\n\r push  " + num +";";}
+        if (isFloat(num)){
+            int intBits = Float.floatToIntBits(Float.parseFloat(super.getToken().marking));
+            String binary = Integer.toBinaryString(intBits)+"b";
+            return  "\n\r push  " + binary +";";
+        }
+        throw new MySyntaxError(super.getToken().line, super.getToken().column, "Not allowed type");
+    }
 
-        return  result + binary +";";
+    boolean isNumerical(String num){
+        try
+        {
+            Integer.parseInt(num);
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    boolean isFloat(String num){
+        try
+        {
+            Integer.parseInt(num);
+        }
+        catch(NumberFormatException nfe)
+        {
+            return false;
+        }
+        return true;
     }
 }
