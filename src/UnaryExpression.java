@@ -21,7 +21,10 @@ public class UnaryExpression extends Expression {
 
     @Override
     public String generateCode() {
-        return childTerm.generateCode() + "\n\r not eax;";
+        return childTerm.generateCode() + "\n\r pop eax;\n" +
+                "cmp eax,0;\n" +
+                "sete al;\n" +
+                "push al;\n\r";
     }
 }
 
