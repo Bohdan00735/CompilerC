@@ -23,7 +23,8 @@ public class UnaryExpression extends Expression {
     public String generateCode() {
         return childTerm.generateCode() + "\n\r pop eax;\n" +
                 "cmp eax,0;\n" +
-                "sete al;\n" +
+                "xor eax,eax;\n" +
+                "setne al;\n" +
                 "push al;\n\r";
     }
 }

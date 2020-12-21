@@ -43,6 +43,7 @@ public class Node {
                 res.append(child.generateCode());
             }
         }
-        return res.toString() + "\n\r return eax;";
+        return res.toString() + "\n\r pop,eax;" +
+                "\nret";
     }
 }

@@ -8,9 +8,15 @@ public class Main {
             }*/
             Lexer lexer = new Lexer("./resources/1-17-java-IO-81-Melniichuk.c");
             Parser parser = new Parser(lexer.decomposeTextOnTokens());
-            CodeGenerator codeGenerator = new CodeGenerator(parser.parse(),parser.functionsAst);
-            codeGenerator.generateCode();
-            codeGenerator.createFile("1-17-java-IO-81-Melniichuk.asm");
+
+            try{
+                CodeGenerator codeGenerator = new CodeGenerator(parser.parse(),parser.functionsAst);
+                codeGenerator.generateCode();
+                codeGenerator.createFile("1-17-java-IO-81-Melniichuk.asm");
+            }catch (MySyntaxError error){
+                System.out.printf(error.getMessage()+" in (%d;%d)", error.line, error.column);
+            }
+
         /*}catch (MySyntaxError | InterruptedException error){
             System.out.println(error.getMessage());
         }*/

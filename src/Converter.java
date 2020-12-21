@@ -18,6 +18,8 @@ public class Converter {
         keyWordsStringHashtable.put("!", KeyWords.EXCLAMATION_POINT);
         keyWordsStringHashtable.put("+", KeyWords.PLUS);
         keyWordsStringHashtable.put("=", KeyWords.EQUALS);
+        keyWordsStringHashtable.put("||",KeyWords.OR);
+        keyWordsStringHashtable.put("-",KeyWords.MINUS);
     }
 
     public KeyWords convert(String word, int row){

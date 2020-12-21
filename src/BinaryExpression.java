@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class BinaryExpression extends Expression {
     Term leftOperand;
     Term rightOperand;
+    private int pointersCounter = 0;
 
     public BinaryExpression(Term leftOperand, KeyWords operator, Term rightOperand) {
         super(operator);
@@ -12,6 +13,9 @@ public class BinaryExpression extends Expression {
 
     @Override
     public String generateCode() {
+        if (super.getOperator() == KeyWords.OR){
+            return generateForLogicOperation();
+        }
         String result = leftOperand.generateCode() +
                 rightOperand.generateCode() +
                 "\n\r pop ebx;\n" +
@@ -20,9 +24,28 @@ public class BinaryExpression extends Expression {
             case PLUS:
                 result+="add eax, ebx;";
                 break;
-                // will be added other binary operators
+            case MINUS:
+                result+="sub eax, ebx";
+                break;
         }
         result+="\n\r push eax; \n\r";
+        return result;
+    }
+
+    private String generateForLogicOperation() {
+        String result = leftOperand.generateCode();
+        switch (super.getOperator()){
+            case OR:
+                result+="\npop eax;\n" +
+                        "cmp eax,0;\n" +
+                        "je _nextCalculation"+ pointersCounter +"\n"+
+                        "push 1\n"+"jmp _endOperation"+pointersCounter+"\n"+
+                rightOperand.generateCode()+"\npop eax; \n cmp eax,0;" +
+                        "\n xor eax, eax\n" +
+                        "setne al;\n" +
+                        "push al;"
+                ;
+        }
         return result;
     }
 }

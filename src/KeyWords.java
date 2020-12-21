@@ -14,7 +14,9 @@ public enum KeyWords{
     LINE,
     PLUS,
     EXCLAMATION_POINT,
-    EQUALS
+    EQUALS,
+    OR,
+    MINUS
 
 }
 

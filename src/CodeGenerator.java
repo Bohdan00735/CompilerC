@@ -22,7 +22,7 @@ public class  CodeGenerator {
     }
 
     public void generateCode(){
-        asmCode="";
+        asmCode = configData();
 
         if (ast == null){
             throw new MySyntaxError(0,0, "main not found");
@@ -31,11 +31,18 @@ public class  CodeGenerator {
             //analise and create functions from functionsAst
         }
         else {
+
             asmCode += "\n .code \n";
             //build main proc
             asmCode+=configMain();
             asmCode+= "\n\r end main";
         }
+    }
+
+    private String configData() {
+        String result = ".data";
+
+        return result;
     }
 
 

@@ -3,10 +3,7 @@ import javax.print.DocFlavor;
 import java.lang.reflect.Parameter;
 import java.security.Key;
 import java.security.KeyException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.function.ToDoubleBiFunction;
 
 public class
@@ -15,7 +12,8 @@ Parser {
     ArrayList<Token> tokens;
     AST mainAst;
     HashMap<String, AST> functionsAst;
-    Iterator<Token> tokenIterator;
+    HashMap<String, Assign> elements = new HashMap<>();
+    ListIterator<Token> tokenIterator;
     int openedScopes = 0;
 
     public Parser(ArrayList<Token> tokens) {
@@ -24,7 +22,7 @@ Parser {
 
     public AST parse(){
         functionsAst = new HashMap<>();
-        for (tokenIterator = tokens.iterator(); tokenIterator.hasNext();){
+        for (tokenIterator = tokens.listIterator(); tokenIterator.hasNext();){
             Token current = tokenIterator.next();
             if (current.type == KeyWords.INT || current.type == KeyWords.FLOAT){
                 Token next = tokenIterator.next();
@@ -52,10 +50,15 @@ Parser {
             Token currentToken = tokenIterator.next();
             switch (currentToken.type){
                 case INT:
-                    root.addChildNode(parseDeclaration(tokenIterator, root, currentToken.type));
+                case FLOAT:
+                    root.addChildNode(parseDeclaration(root, currentToken.type));
+                    break;
+                case ID:
+                    root.addChildNode(parseAssign());
+                    break;
                 case RETURN:
                     Node returnNode = new Node(currentToken, parentNode);
-                    returnNode.addChildNode(formReturn(tokenIterator, root));
+                    returnNode.addChildNode(formReturn(root));
                     root.addChildNode(returnNode);
                     break;
             }
@@ -63,27 +66,52 @@ Parser {
         return new AST(root);
     }
 
-    private Node parseDeclaration(Iterator<Token> tokenIterator, Function root, KeyWords type) {
+    private Assign parseAssign() {
+        Token token = tokenIterator.previous();
+        tokenIterator.next();//to deploy iterator
+        Assign assign;
+        try {
+            assign = elements.get(token.marking);
+        }catch (NullPointerException exception){
+            throw new MySyntaxError(token.line, token.column, "no variables with that name");
+        }
+        token = tokenIterator.next();
+        if (token.type!=KeyWords.EQUALS){
+            throw new MySyntaxError(token.line, token.column, "Equals symbol expected");
+        }
+        assign.setEquivalent(analiseMathExpresion());
+        checkSemicolon();
+        return assign;
+    }
+
+    private Assign parseDeclaration(Function root, KeyWords type) {
         Token token = tokenIterator.next();
-        if (token.type != KeyWords.LINE){
+
+        if (token.type != KeyWords.ID){
             throw new MySyntaxError(token.line, 1, "name expected");
         }
         String name = token.marking;
+        if (elements.containsKey(name)){throw new MySyntaxError(token.line, token.column, "variable with that name was declared earlier");}
+        Assign result = new Assign(name, type);
+        elements.put(name, result);
         token = tokenIterator.next();
+
         if (token.type != KeyWords.EQUALS){
-            throw new MySyntaxError(token.line, 2, "equals symbol expected");
-        }
-        Node result;
-        if(isNextNum(tokenIterator)){
-            result = new Node(tokenIterator.next(),root);
-        }else {
-            result = analiseMathExpresion(tokenIterator);
+            checkSemicolon();
+            return result;
         }
 
-        if (tokenIterator.next().type != KeyWords.SEMICOLON){
-            throw new MySyntaxError(token.line, -1,"Semicolon expected at the end of declaration");
-        }
+        result.setEquivalent(parseMathHierarchy());
+        checkSemicolon();
+
         return result;
+    }
+
+    private void checkSemicolon(){
+        Token token = tokenIterator.previous();
+        if (token.type != KeyWords.SEMICOLON){
+            throw new MySyntaxError(token.line, token.column,"Semicolon expected at the end of declaration");
+        }
     }
 
 
@@ -116,99 +144,64 @@ Parser {
 
     }
 
-    private Node formReturn(Iterator<Token> tokenIterator, Function parent){
-        return analiseMathExpresion(tokenIterator);
+    private Node formReturn(Function parent){
+        return parseMathHierarchy();
 
     }
-
-    private boolean isExpresion(Iterator<Token> tokenIterator) {
-        while (tokenIterator.hasNext()){
-            Token token = tokenIterator.next();
-            switch (token.type){
-                case NUM:
-                    isNextBin(tokenIterator);
-                    return true;
-                case EXCLAMATION_POINT:
-                    isNextNum(tokenIterator);
-            }
+    private Term parseMathHierarchy(){
+        Term term = analiseMathExpresion();
+        Token next = tokenIterator.previous();
+        tokenIterator.next();
+        while (next.type == KeyWords.OR){
+            Term nextTerm = analiseMathExpresion();
+            term = new BinaryExpression(term, next.type, nextTerm);
+            next = tokenIterator.previous();
         }
-        return false;
+        tokenIterator.next();
+        return term;
     }
-
-    private boolean isNextNum(Iterator<Token> tokenIterator) {
-        return tokenIterator.next().type == KeyWords.NUM;
-    }
-
-    private Expression analiseExpression(Iterator<Token> tokenIterator, Expression parent) {
-
-        Token token = tokenIterator.next();
-        if (token.type == KeyWords.FLOAT || token.type == KeyWords.INT){
-            KeyWords type = token.type;
-            token = tokenIterator.next();
-
-            if (token.type != KeyWords.LINE){
-                throw new MySyntaxError(token.line, token.column,"Name in declare expected");
-            }
-        }
-        return null;
-    }
-
-
-    private Term analiseMathExpresion(Iterator<Token> tokenIterator){
-        Term term = parseTerm(tokenIterator);
+    private Term analiseMathExpresion(){
+        Term term = parseTerm();
         Token next = tokenIterator.next();
-        while (next.type == KeyWords.PLUS){
-            Term nextTerm = parseTerm(tokenIterator);
+        while (next.type == KeyWords.PLUS || next.type == KeyWords.MINUS){
+            Term nextTerm = parseTerm();
             term = new BinaryExpression(term, next.type, nextTerm);
             next = tokenIterator.next();
-            if(next.type == KeyWords.RPAR){
-                if (openedScopes==0){
-                    throw new MySyntaxError(next.line, next.column, "Close brace not expected");
-                }
-                openedScopes -= 1;
-            }
         }
         return term;
     }
 
-    private Term parseTerm(Iterator<Token> tokenIterator) {
+    private Term parseTerm() {
         Token next = tokenIterator.next();
         switch (next.type){
             case LPAR:
-                openedScopes +=1;
-                return analiseMathExpresion(tokenIterator);
+                Term result = parseMathHierarchy();
+                next = tokenIterator.previous();
+                if (next.type != KeyWords.RPAR){
+                    throw new MySyntaxError(next.line, next.column, "Close brace expected");
+                }
+                return result;
             case EXCLAMATION_POINT:
-                return new UnaryExpression(next.type,parseTerm(tokenIterator));
+                return new UnaryExpression(next.type,parseTerm());
             case NUM:
                 return new Num(next);
-            case RPAR:
-                if (openedScopes==0){
-                    throw new MySyntaxError(next.line, next.column, "Close brace not expected");
+            case ID:
+                if (elements.containsKey(next.marking)){
+                    if (elements.get(next.marking).equivalent == null){
+                        throw new MySyntaxError(next.line, next.column,
+                                "variable \""+next.marking+ "\" wasn`t initialized and uses");
+                    }
+                    return new LinkOnVar(next.marking);
+                }else {
+                    throw new MySyntaxError(next.line, next.column,
+                            "variable with \""+next.marking+ "\" name wasn't declared earlier");
                 }
-                openedScopes -=1 ;
+
             default:
                 throw new MySyntaxError(next.line, next.column, "Some term expected");
         }
     }
 
-    private boolean isEndLine(Iterator<Token> tokenIterator) {
-        return tokenIterator.next().type == KeyWords.EXCLAMATION_POINT;
-    }
-
-    private boolean isNextBin(Iterator<Token> tokenIterator) {
-        return tokenIterator.next().type != KeyWords.PLUS;
-    }
-
-    private void analiseAssigment(Node parentNode){
-        //there will be analise of assigment
-    }
-
-    private Boolean checkForEnd(Iterator<Token> tokenIterator){
-        Token symbol = tokenIterator.next();
-        if (symbol.type != KeyWords.SEMICOLON && tokenIterator.next().type != KeyWords.RCBRAC){
-            return true;
-        }return false;
-    }
 
 
     private Boolean isNextWord(Token token){
