@@ -57,7 +57,7 @@ Parser {
                     root.addChildNode(parseAssign());
                     break;
                 case RETURN:
-                    Node returnNode = new Node(currentToken, parentNode);
+                    ReturnNode returnNode = new ReturnNode(currentToken, root);
                     returnNode.addChildNode(formReturn(root));
                     root.addChildNode(returnNode);
                     break;
@@ -151,7 +151,6 @@ Parser {
     private Term parseMathHierarchy(){
         Term term = analiseMathExpresion();
         Token next = tokenIterator.previous();
-        tokenIterator.next();
         while (next.type == KeyWords.OR){
             Term nextTerm = analiseMathExpresion();
             term = new BinaryExpression(term, next.type, nextTerm);

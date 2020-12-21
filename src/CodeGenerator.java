@@ -40,7 +40,10 @@ public class  CodeGenerator {
     }
 
     private String configData() {
-        String result = ".data";
+        String result = ".data\n" +
+                "Header db \" Result \" ,0" +
+                "\n textBuf dd 45 dup(?)\n" +
+                "result dd 0";
 
         return result;
     }
@@ -52,6 +55,7 @@ public class  CodeGenerator {
              ) {
             function.append(child.generateCode());
         }
+        function.append("Invoke ExitProcess, 0");
         return function.toString();
     }
 

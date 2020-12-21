@@ -49,7 +49,7 @@ public class Num extends Term {
     boolean isFloat(String num){
         try
         {
-            Integer.parseInt(num);
+            Float.parseFloat(num);
         }
         catch(NumberFormatException nfe)
         {

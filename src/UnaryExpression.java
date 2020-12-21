@@ -25,7 +25,7 @@ public class UnaryExpression extends Expression {
                 "cmp eax,0;\n" +
                 "xor eax,eax;\n" +
                 "setne al;\n" +
-                "push al;\n\r";
+                "push eax;\n\r";
     }
 }
 

@@ -36,14 +36,6 @@ public class Node {
     }
 
     public String generateCode() {
-        StringBuilder res = new StringBuilder();
-        if (thisToken.type == KeyWords.RETURN){
-            for (Node child:childNodes
-                 ) {
-                res.append(child.generateCode());
-            }
-        }
-        return res.toString() + "\n\r pop,eax;" +
-                "\nret";
+        return null;
     }
 }

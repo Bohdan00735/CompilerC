@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class BinaryExpression extends Expression {
     Term leftOperand;
     Term rightOperand;
@@ -43,7 +41,7 @@ public class BinaryExpression extends Expression {
                 rightOperand.generateCode()+"\npop eax; \n cmp eax,0;" +
                         "\n xor eax, eax\n" +
                         "setne al;\n" +
-                        "push al;"
+                        "push eax;"
                 ;
         }
         return result;
