@@ -10,7 +10,7 @@ public class Main {
             Parser parser = new Parser(lexer.decomposeTextOnTokens());
 
             try{
-                CodeGenerator codeGenerator = new CodeGenerator(parser.parse(),parser.functionsAst);
+                CodeGenerator codeGenerator = new CodeGenerator(parser.parse(),parser.functionsAst, parser.elements);
                 codeGenerator.generateCode();
                 codeGenerator.createFile("1-17-java-IO-81-Melniichuk.asm");
             }catch (MySyntaxError error){

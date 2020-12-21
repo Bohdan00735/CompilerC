@@ -29,5 +29,14 @@ public class Assign extends Node {
                 "\n\rpop eax;\n" +
                 "mov "+ name+",eax\n";
     }
+
+    public String generateInitialisation(){
+        String result = "\n"+name+" dd ";
+        if (type==KeyWords.INT){
+            result+="0";
+        }else result+="0.0";
+
+        return result+"\n";
+    }
 }
 

@@ -79,7 +79,7 @@ Parser {
         if (token.type!=KeyWords.EQUALS){
             throw new MySyntaxError(token.line, token.column, "Equals symbol expected");
         }
-        assign.setEquivalent(analiseMathExpresion());
+        assign.setEquivalent(parseMathHierarchy());
         checkSemicolon();
         return assign;
     }
@@ -150,13 +150,16 @@ Parser {
     }
     private Term parseMathHierarchy(){
         Term term = analiseMathExpresion();
-        Token next = tokenIterator.previous();
+        tokenIterator.previous();
+        Token next = tokenIterator.next();
+        boolean toDeploy = false;
         while (next.type == KeyWords.OR){
             Term nextTerm = analiseMathExpresion();
             term = new BinaryExpression(term, next.type, nextTerm);
             next = tokenIterator.previous();
+            toDeploy = true;
         }
-        tokenIterator.next();
+        if (toDeploy) tokenIterator.next();
         return term;
     }
     private Term analiseMathExpresion(){

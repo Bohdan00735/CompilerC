@@ -13,7 +13,7 @@ public class ReturnNode extends Node{
         ) {
             res.append(child.generateCode());
         }
-        res.append("pop result\n");
+        res.append("\npop result\n");
         switch (parentNode.returnType){
             case FLOAT:
                 res.append("Push Offset textBuf\n" +

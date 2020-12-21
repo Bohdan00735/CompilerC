@@ -6,23 +6,28 @@ public class  CodeGenerator {
     private AST ast;
     private String asmCode;
     private HashMap<String, AST> functionsAst;
+    private HashMap<String, Assign> elements;
 
-    String masmTemplate =".586\n" +
+
+    private String masmTemplate =".586\n" +
             ".model flat, stdcall\n" +
             "option casemap :none ;to distinguish between uppercase and lowercase letters\n" +
-            "include \\masm32\\include\\windows.inc\n" +
-            "include D:\\masm32\\include\\kernel32.inc\n" +
-            "include D:\\masm32\\include\\user32.inc\n" +
-            "includelib D:\\masm32\\lib\\kernel32.lib\n" +
-            "includelib D:\\masm32\\lib\\user32.lib\n";
+            ".stack 4096\n" +
+            "include \\masm32\\include\\kernel32.inc\n" +
+            "include \\masm32\\include\\user32.inc \n" +
+            "includelib \\masm32\\lib\\kernel32.lib\n" +
+            "includelib \\masm32\\lib\\user32.lib\n" +
+            "include module.inc;";
 
-    public CodeGenerator(AST ast, HashMap<String, AST> functionsAst) {
+    public CodeGenerator(AST ast, HashMap<String, AST> functionsAst, HashMap<String, Assign> elements) {
         this.ast = ast;
         this.functionsAst = functionsAst;
+        this.elements = elements;
     }
 
     public void generateCode(){
-        asmCode = configData();
+        asmCode = masmTemplate;
+        asmCode += configData();
 
         if (ast == null){
             throw new MySyntaxError(0,0, "main not found");
@@ -40,11 +45,15 @@ public class  CodeGenerator {
     }
 
     private String configData() {
-        String result = ".data\n" +
+        String result = "\n.data\n" +
                 "Header db \" Result \" ,0" +
                 "\n textBuf dd 45 dup(?)\n" +
                 "result dd 0";
 
+        for (Assign as:elements.values()
+             ) {
+            result+=as.generateInitialisation();
+        }
         return result;
     }
 

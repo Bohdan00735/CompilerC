@@ -38,12 +38,14 @@ public class BinaryExpression extends Expression {
                         "cmp eax,0;\n" +
                         "je _nextCalculation"+ pointersCounter +"\n"+
                         "push 1\n"+"jmp _endOperation"+pointersCounter+"\n"+
+                        "_nextCalculation"+ pointersCounter +":\n"+
                 rightOperand.generateCode()+"\npop eax; \n cmp eax,0;" +
                         "\n xor eax, eax\n" +
                         "setne al;\n" +
-                        "push eax;"
-                ;
+                        "push eax;\n" +
+                        "_endOperation"+pointersCounter+":\n";
         }
+        pointersCounter++;
         return result;
     }
 }

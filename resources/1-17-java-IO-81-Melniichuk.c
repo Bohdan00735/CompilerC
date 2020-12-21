@@ -1,3 +1,7 @@
 float main(){
-return 5.5+(!(3.2+2)+3);
+float a = 4.3;
+float b;
+
+b = a || 2.0 ;
+return b+6.2;
 }
