@@ -85,4 +85,14 @@ public class  CodeGenerator {
             return false;
         }
     }
+
+    public String createPass(String filePath) {
+        String[] tokens = filePath.split("/");
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < tokens.length-1; i++) {
+            result.append(tokens[i]+"/");
+        }
+        result.append("2-17-java-IO-81-Melniichuk.asm").toString();
+        return "2-17-java-IO-81-Melniichuk.asm";
+    }
 }

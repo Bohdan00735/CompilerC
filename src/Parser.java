@@ -46,8 +46,13 @@ Parser {
 
     private AST analiseFunction(KeyWords returnType,Node parentNode, Token startToken, Iterator<Token> tokenIterator) {
         Function root =  new Function(startToken, parentNode, returnType, startToken.marking, analiseInput(tokenIterator));
+        Token currentToken = tokenIterator.next();
+        if (currentToken.type != KeyWords.LCBRAC){
+            throw new MySyntaxError(currentToken.line, currentToken.column,
+                    "LCBRAC expected");
+        }
         while (tokenIterator.hasNext()){
-            Token currentToken = tokenIterator.next();
+            currentToken = tokenIterator.next();
             switch (currentToken.type){
                 case INT:
                 case FLOAT:
@@ -61,6 +66,11 @@ Parser {
                     returnNode.addChildNode(formReturn(root));
                     root.addChildNode(returnNode);
                     break;
+                default:
+                    if (currentToken.type != KeyWords.RCBRAC){
+                        throw new MySyntaxError(currentToken.line, currentToken.column,
+                                "error syntax");
+                    }
             }
         }
         return new AST(root);
@@ -112,6 +122,7 @@ Parser {
         if (token.type != KeyWords.SEMICOLON){
             throw new MySyntaxError(token.line, token.column,"Semicolon expected at the end of declaration");
         }
+        tokenIterator.next();
     }
 
 
@@ -145,9 +156,19 @@ Parser {
     }
 
     private Node formReturn(Function parent){
-        return parseMathHierarchy();
+        Node res = parseMathHierarchy();
+        checkSemicolon();
+        return res;
 
     }
+
+    private void checkNextSemicolon() {
+        Token token = tokenIterator.next();
+        if (token.type != KeyWords.SEMICOLON){
+            throw new MySyntaxError(token.line, token.column,"Semicolon expected at the end of declaration");
+        }
+    }
+
     private Term parseMathHierarchy(){
         Term term = analiseMathExpresion();
         tokenIterator.previous();
@@ -179,6 +200,7 @@ Parser {
             case LPAR:
                 Term result = parseMathHierarchy();
                 next = tokenIterator.previous();
+                tokenIterator.next();
                 if (next.type != KeyWords.RPAR){
                     throw new MySyntaxError(next.line, next.column, "Close brace expected");
                 }
