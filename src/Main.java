@@ -1,25 +1,33 @@
+import javax.swing.*;
+
 public class Main {
     public static void main(String[] args) {
-        /*FileChooser fileChooser = new FileChooser();
+        FileChooser fileChooser = new FileChooser();
+        final JPanel panel = new JPanel();
 
         try{
             while(fileChooser.filePath == null){
                  Thread.sleep(5000);
-            }*/
-            Lexer lexer = new Lexer("./resources/1-17-java-IO-81-Melniichuk.c");
+            }
+            Lexer lexer = new Lexer(fileChooser.filePath);
             Parser parser = new Parser(lexer.decomposeTextOnTokens());
 
             try{
                 CodeGenerator codeGenerator = new CodeGenerator(parser.parse(),parser.functionsAst, parser.elements);
                 codeGenerator.generateCode();
-                codeGenerator.createFile("1-17-java-IO-81-Melniichuk.asm");
+
+                codeGenerator.createFile(codeGenerator.createPass(fileChooser.filePath));
             }catch (MySyntaxError error){
-                System.out.printf(error.getMessage()+" in (%d;%d)", error.line, error.column);
+                JOptionPane.showMessageDialog(panel,
+                        String.format(error.getMessage()+" in (%d;%d)", error.line, error.column),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+
             }
 
-        /*}catch (MySyntaxError | InterruptedException error){
-            System.out.println(error.getMessage());
-        }*/
+        }catch (MySyntaxError | InterruptedException error){
+            JOptionPane.showMessageDialog(panel, error.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
 
     }
 }

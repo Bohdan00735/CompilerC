@@ -32,9 +32,9 @@ public class FileChooser extends JFrame {
 
         JPanel contents = new JPanel();
         contents.add(btnChooseFile);
-        contents.add(btnChooseDefault);
+        /*contents.add(btnChooseDefault);
         contents.add(btnReadDefault);
-        contents.add(defaultFileText);
+        contents.add(defaultFileText);*/
         setContentPane(contents);
         setSize(500,400);
         setVisible(true);
@@ -50,7 +50,6 @@ public class FileChooser extends JFrame {
                 int result = fileChooser.showOpenDialog(FileChooser.this);
                 if (result == JFileChooser.APPROVE_OPTION )
                     filePath = fileChooser.getSelectedFile().getPath();
-
 
                 FileChooser.this.dispose();
             }

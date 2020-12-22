@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="CompilerC:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="BranchesTreeState">
     <expand>
       <path>
@@ -19,23 +24,14 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4cee570d-230e-4fe2-a1e2-be3382364d69" name="Default Changelist" comment="generate print result in window">
+    <list default="true" id="4cee570d-230e-4fe2-a1e2-be3382364d69" name="Default Changelist" comment="final 3">
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/CompilerC_jar.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/1-17-java-IO-81-Melniichuk.asm" beforeDir="false" afterPath="$PROJECT_DIR$/1-17-java-IO-81-Melniichuk.asm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Assign.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Assign.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/BinaryExpression.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/BinaryExpression.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/CodeGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/CodeGenerator.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Parser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/ReturnNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/ReturnNode.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/1-17-java-IO-81-Melniichuk.c" beforeDir="false" afterPath="$PROJECT_DIR$/resources/1-17-java-IO-81-Melniichuk.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Assign.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Assign.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BinaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BinaryExpression.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CodeGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LinkOnVar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LinkOnVar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FileChooser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FileChooser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ReturnNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ReturnNode.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +65,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
   </component>
@@ -114,7 +110,8 @@
       <workItem from="1607677788776" duration="13417000" />
       <workItem from="1607933246938" duration="10069000" />
       <workItem from="1608039390993" duration="142000" />
-      <workItem from="1608546907658" duration="7065000" />
+      <workItem from="1608546907658" duration="7295000" />
+      <workItem from="1608623940492" duration="11250000" />
     </task>
     <task id="LOCAL-00001" summary="binary and unary expressions">
       <created>1607678370513</created>
@@ -158,7 +155,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608585695543</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="final 3">
+      <created>1608589991707</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1608589991707</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -182,20 +186,21 @@
     <MESSAGE value="using Flags for not action" />
     <MESSAGE value="operations lab3" />
     <MESSAGE value="generate print result in window" />
-    <option name="LAST_COMMIT_MESSAGE" value="generate print result in window" />
+    <MESSAGE value="final 3" />
+    <option name="LAST_COMMIT_MESSAGE" value="final 3" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Parser.java</url>
-          <line>56</line>
-          <option name="timeStamp" value="19" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/ReturnNode.java</url>
           <line>11</line>
           <option name="timeStamp" value="20" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Parser.java</url>
+          <line>158</line>
+          <option name="timeStamp" value="23" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
