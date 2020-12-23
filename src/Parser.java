@@ -15,6 +15,7 @@ Parser {
     ArrayList<HashMap<String, Assign>> encloseVariables = new ArrayList<>();
     ListIterator<Token> tokenIterator;
     int conditionalCounter = 0;
+    int localIdCounter = 0;
 
 
     public Parser(ArrayList<Token> tokens) {
@@ -29,11 +30,11 @@ Parser {
                 Token next = tokenIterator.next();
                 switch (next.type){
                     case MAIN:
-                        mainAst = analiseFunction(current.type, null, next,0);
+                        mainAst = analiseFunction(current.type, null, next,getLocalIdCounter());
                         continue;
 
                     case LINE:
-                        functionsAst.put(current.marking, analiseFunction(current.type, mainAst.getRoot(), next,0));
+                        functionsAst.put(current.marking, analiseFunction(current.type, mainAst.getRoot(), next,getLocalIdCounter()));
 
                         //TODO for param
                 }
@@ -53,7 +54,7 @@ Parser {
                     "LCBRAC expected");
         }
         while (currentToken.type == KeyWords.LCBRAC){
-            Compound newCompound = new Compound(currentToken, root, root.getDepth());
+            Compound newCompound = new Compound(currentToken, root, getLocalIdCounter());
             parseCompound(newCompound);
             encloseVariables.add(newCompound.elements);
             root.addChildNode(newCompound);
@@ -85,9 +86,10 @@ Parser {
                     root.addChildNode(parseConditional(root));
                     break;
                 case LCBRAC:
-                    Compound newCompound = new Compound(currentToken, root, root.getDepth()+1);
+                    Compound newCompound = new Compound(currentToken, root, getLocalIdCounter());
                     parseCompound(newCompound);
                     root.addChildNode(newCompound);
+                    encloseVariables.add(newCompound.elements);
                     break;
                 default:
                     if (currentToken.type != KeyWords.RCBRAC){
@@ -116,7 +118,7 @@ Parser {
             throw new MySyntaxError(token.line, token.column,
                     "LCBRAC expected");
         }
-        Compound newCompound = new Compound(token, root, root.getDepth()+1);
+        Compound newCompound = new Compound(token, root, getLocalIdCounter());
         parseCompound(newCompound);
         result.setIfPart(newCompound);
         token = tokenIterator.next();
@@ -126,7 +128,7 @@ Parser {
                 throw new MySyntaxError(token.line, token.column,
                         "LCBRAC expected");
             }
-            newCompound = new Compound(token, root, root.getDepth()+1);
+            newCompound = new Compound(token, root, getLocalIdCounter());
             parseCompound(newCompound);
             result.setElsePart(newCompound);
         }
@@ -276,6 +278,10 @@ Parser {
         }
     }
 
+    private int getLocalIdCounter(){
+        localIdCounter++;
+        return localIdCounter-1;
+    }
 
 
     private Boolean isNextWord(Token token){

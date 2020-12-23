@@ -69,7 +69,7 @@ public class Compound extends Node{
         StringBuilder stringBuilder = new StringBuilder();
         for (Assign as:elements.values()
              ) {
-            stringBuilder.append("\n mov "+ as.name+", 0");
+            stringBuilder.append("\n mov "+ as.name+", 0 \n");
         }
         return stringBuilder.toString();
     }

@@ -24,7 +24,7 @@ public class Conditional extends Node{
                 "\n pop eax\n" +
                 "cmp eax, 0\n" +
                 "je else"+pointing+"\n"+ifPart.generateCode()+
-                "else"+pointing+":\n";
+                "\nelse"+pointing+":\n";
         if (elsePart != null) result+= elsePart.generateCode();
         return result;
     }

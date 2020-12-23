@@ -56,7 +56,7 @@ public class  CodeGenerator {
         HashSet<String> names = makeSetOfVariables();
         for (String name:names
              ) {
-            result.append(name).append("dd 0 dup(0)\n");
+            result.append(name).append(" dd 0 dup(0)\n");
         }
         return result.toString();
     }
