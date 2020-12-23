@@ -12,10 +12,9 @@ Parser {
     ArrayList<Token> tokens;
     AST mainAst;
     HashMap<String, AST> functionsAst;
-    ArrayList<HashMap<String, Assign>> encloseVariables = new ArrayList<>();
     ListIterator<Token> tokenIterator;
     int conditionalCounter = 0;
-    int localIdCounter = 0;
+    private int startStackIndex = -4;
 
 
     public Parser(ArrayList<Token> tokens) {
@@ -30,11 +29,11 @@ Parser {
                 Token next = tokenIterator.next();
                 switch (next.type){
                     case MAIN:
-                        mainAst = analiseFunction(current.type, null, next,getLocalIdCounter());
+                        mainAst = analiseFunction(current.type, null, next);
                         continue;
 
                     case LINE:
-                        functionsAst.put(current.marking, analiseFunction(current.type, mainAst.getRoot(), next,getLocalIdCounter()));
+                        functionsAst.put(current.marking, analiseFunction(current.type, mainAst.getRoot(), next));
 
                         //TODO for param
                 }
@@ -46,17 +45,16 @@ Parser {
         return mainAst;
     }
 
-    private AST analiseFunction(KeyWords returnType,Node parentNode, Token startToken, int depth) {
-        Function root =  new Function(startToken, parentNode,depth, returnType, startToken.marking, analiseInput(tokenIterator));
+    private AST analiseFunction(KeyWords returnType,Node parentNode, Token startToken) {
+        Function root =  new Function(startToken, parentNode,startStackIndex,returnType, startToken.marking, analiseInput(tokenIterator));
         Token currentToken = tokenIterator.next();
         if (currentToken.type != KeyWords.LCBRAC){
             throw new MySyntaxError(currentToken.line, currentToken.column,
                     "LCBRAC expected");
         }
         while (currentToken.type == KeyWords.LCBRAC){
-            Compound newCompound = new Compound(currentToken, root, getLocalIdCounter());
+            Compound newCompound = new Compound(currentToken, root,startStackIndex);
             parseCompound(newCompound);
-            encloseVariables.add(newCompound.elements);
             root.addChildNode(newCompound);
             if (!tokenIterator.hasNext()){return new AST(root);}
             currentToken = tokenIterator.next();
@@ -86,10 +84,9 @@ Parser {
                     root.addChildNode(parseConditional(root));
                     break;
                 case LCBRAC:
-                    Compound newCompound = new Compound(currentToken, root, getLocalIdCounter());
+                    Compound newCompound = new Compound(currentToken, root, root.stackIndex);
                     parseCompound(newCompound);
                     root.addChildNode(newCompound);
-                    encloseVariables.add(newCompound.elements);
                     break;
                 default:
                     if (currentToken.type != KeyWords.RCBRAC){
@@ -118,7 +115,7 @@ Parser {
             throw new MySyntaxError(token.line, token.column,
                     "LCBRAC expected");
         }
-        Compound newCompound = new Compound(token, root, getLocalIdCounter());
+        Compound newCompound = new Compound(token, root, root.stackIndex);
         parseCompound(newCompound);
         result.setIfPart(newCompound);
         token = tokenIterator.next();
@@ -128,7 +125,7 @@ Parser {
                 throw new MySyntaxError(token.line, token.column,
                         "LCBRAC expected");
             }
-            newCompound = new Compound(token, root, getLocalIdCounter());
+            newCompound = new Compound(token, root, root.stackIndex);
             parseCompound(newCompound);
             result.setElsePart(newCompound);
         }
@@ -148,7 +145,13 @@ Parser {
         if (token.type!=KeyWords.EQUALS){
             throw new MySyntaxError(token.line, token.column, "Equals symbol expected");
         }
-        assign.setEquivalent(parseMathHierarchy(rootCompound));
+        if (assign.getClass() == EmptyAssign.class){
+            assign = new Assign((EmptyAssign) assign, parseMathHierarchy(rootCompound));
+            rootCompound.changeToFullAssign(assign, assign.getName());
+        }else {
+            assign.setEquivalent(parseMathHierarchy(rootCompound));
+        }
+
         checkSemicolon();
         return assign;
     }
@@ -161,16 +164,18 @@ Parser {
         }
         String name = token.marking;
         if (root.checkLocalVariables(name)){throw new MySyntaxError(token.line, token.column, "variable with that name was declared earlier");}
-        Assign result = new Assign(name+root.getDepth(), type);
-        root.addAssign(result,name);
+        Assign result = new EmptyAssign(name, type, root.stackIndex);
+        root.stackIndex-=4;
         token = tokenIterator.next();
 
         if (token.type != KeyWords.EQUALS){
+            root.addAssign(result,name);
             checkSemicolon();
             return result;
         }
 
-        result.setEquivalent(parseMathHierarchy(root));
+        result = new Assign((EmptyAssign) result,parseMathHierarchy(root));
+        root.addAssign(result,name);
         checkSemicolon();
 
         return result;
@@ -267,7 +272,7 @@ Parser {
                         throw new MySyntaxError(next.line, next.column,
                                 "variable \""+next.marking+ "\" wasn`t initialized and uses");
                     }
-                    return new LinkOnVar(next.marking);
+                    return new LinkOnVar(rootCompound.getDepthOfFirstUse(next.marking));
                 }else {
                     throw new MySyntaxError(next.line, next.column,
                             "variable with \""+next.marking+ "\" name wasn't declared earlier");
@@ -278,14 +283,8 @@ Parser {
         }
     }
 
-    private int getLocalIdCounter(){
-        localIdCounter++;
-        return localIdCounter-1;
-    }
-
 
     private Boolean isNextWord(Token token){
-
         if (token.type == KeyWords.LINE) {
             return token.marking.split(" ").length == 1;
         }

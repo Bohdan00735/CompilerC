@@ -2,17 +2,24 @@ public class Assign extends Node {
     String name;
     Term equivalent;
     KeyWords type;
+    int stackPointer;
 
 
-    public Assign(String name, KeyWords type) {
+    public Assign(String name, KeyWords type, int stackPointer) {
         this.name = name;
         this.type = type;
+        this.stackPointer= stackPointer;
     }
 
-    public Assign(String name, Term equivalent, KeyWords type) {
-        this.name = name;
+    public Assign(EmptyAssign emptyAssign,Term equivalent) {
+        name = emptyAssign.name;
+        type = emptyAssign.type;
+        stackPointer = emptyAssign.stackPointer;
         this.equivalent = equivalent;
-        this.type = type;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setEquivalent(Term equivalent) {
@@ -24,14 +31,9 @@ public class Assign extends Node {
         if (equivalent == null){
             return "";
         }
-
         return equivalent.generateCode()+
                 "\n\rpop eax;\n" +
-                "mov "+ name+",eax\n";
-    }
-
-    public String generateInitialisation(){
-        return "\n"+name+" dd 0 dup(0) \n";
+                "mov [ebp"+ stackPointer+"],eax\n";
     }
 }
 

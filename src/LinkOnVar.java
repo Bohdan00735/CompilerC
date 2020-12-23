@@ -1,13 +1,13 @@
 public class LinkOnVar extends Term{
-    String link;
+    int link;
 
-    public LinkOnVar(String link) {
+    public LinkOnVar(int link) {
         this.link = link;
     }
 
     @Override
     public String generateCode() {
-        return "mov eax,"+ link +
-                "\npush eax\n";
+        return "mov eax,[ebp"+ link +
+                "]\npush eax\n";
     }
 }

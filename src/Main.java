@@ -13,7 +13,7 @@ public class Main {
             Parser parser = new Parser(lexer.decomposeTextOnTokens());
 
             try{
-                CodeGenerator codeGenerator = new CodeGenerator(parser.parse(),parser.functionsAst, parser.encloseVariables);
+                CodeGenerator codeGenerator = new CodeGenerator(parser.parse(),parser.functionsAst);
                 codeGenerator.generateCode();
 
                 codeGenerator.createFile(codeGenerator.createPass(fileChooser.filePath));

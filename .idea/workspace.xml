@@ -25,21 +25,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4cee570d-230e-4fe2-a1e2-be3382364d69" name="Default Changelist" comment="included constructions and if">
+      <change afterPath="$PROJECT_DIR$/src/EmptyAssign.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Assign.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Assign.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/CodeGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/CodeGenerator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Converter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Converter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Function.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Function.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/KeyWords.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/KeyWords.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Lexer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Lexer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/LinkOnVar.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/LinkOnVar.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Node.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Node.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Parser$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Parser$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Parser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/ReturnNode$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/ReturnNode$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/ReturnNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/ReturnNode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Assign.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Assign.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CodeGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Compound.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Compound.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Conditional.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Conditional.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Function.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Function.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LinkOnVar.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LinkOnVar.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Parser.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -121,7 +119,9 @@
       <workItem from="1608039390993" duration="142000" />
       <workItem from="1608546907658" duration="7295000" />
       <workItem from="1608623940492" duration="14096000" />
-      <workItem from="1608707887550" duration="19321000" />
+      <workItem from="1608707887550" duration="20862000" />
+      <workItem from="1608747354083" duration="1074000" />
+      <workItem from="1608748511116" duration="4154000" />
     </task>
     <task id="LOCAL-00001" summary="binary and unary expressions">
       <created>1607678370513</created>
@@ -193,7 +193,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608737237658</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="included constructions and if">
+      <created>1608738780640</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1608738780640</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -233,8 +240,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Parser.java</url>
-          <line>264</line>
-          <option name="timeStamp" value="28" />
+          <line>118</line>
+          <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

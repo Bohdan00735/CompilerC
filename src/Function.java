@@ -7,8 +7,8 @@ public class Function extends Compound {
     Map<KeyWords, String> inputParam;
     String name;
 
-    public Function(Token thisToken, Node parentNode,int depth, KeyWords returnType, String name, Map<KeyWords, String> inputParam) {
-        super(thisToken, parentNode, depth);
+    public Function(Token thisToken, Node parentNode,int startIndex, KeyWords returnType, String name, Map<KeyWords, String> inputParam) {
+        super(thisToken, parentNode, startIndex);
         this.returnType = returnType;
         this.name = name;
         this.inputParam = inputParam;

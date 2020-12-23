@@ -9,7 +9,7 @@ public class  CodeGenerator {
     private AST ast;
     private String asmCode;
     private HashMap<String, AST> functionsAst;
-    ArrayList<HashMap<String, Assign>> encloseVariables;
+
 
 
 
@@ -23,10 +23,9 @@ public class  CodeGenerator {
             "includelib \\masm32\\lib\\user32.lib\n" +
             "include module.inc;";
 
-    public CodeGenerator(AST ast, HashMap<String, AST> functionsAst, ArrayList<HashMap<String, Assign>> encloseVariables) {
+    public CodeGenerator(AST ast, HashMap<String, AST> functionsAst) {
         this.ast = ast;
         this.functionsAst = functionsAst;
-        this.encloseVariables = encloseVariables;
     }
 
     public void generateCode(){
@@ -53,24 +52,7 @@ public class  CodeGenerator {
                 "Header db \" Result \" ,0" +
                 "\n textBuf dd 45 dup(?)\n" +
                 "result dd 0 dup(0)\n");
-        HashSet<String> names = makeSetOfVariables();
-        for (String name:names
-             ) {
-            result.append(name).append(" dd 0 dup(0)\n");
-        }
         return result.toString();
-    }
-
-    private HashSet<String> makeSetOfVariables() {
-        HashSet<String> result = new HashSet<>();
-        for (HashMap<String, Assign> map:encloseVariables
-             ) {
-            for (Assign assign:map.values()
-                 ) {
-                result.add(assign.name);
-            }
-        }
-        return result;
     }
 
 
