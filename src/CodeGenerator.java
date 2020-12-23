@@ -1,12 +1,16 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class  CodeGenerator {
     private AST ast;
     private String asmCode;
     private HashMap<String, AST> functionsAst;
-    private HashMap<String, Assign> elements;
+    ArrayList<HashMap<String, Assign>> encloseVariables;
+
 
 
     private String masmTemplate =".586\n" +
@@ -19,10 +23,10 @@ public class  CodeGenerator {
             "includelib \\masm32\\lib\\user32.lib\n" +
             "include module.inc;";
 
-    public CodeGenerator(AST ast, HashMap<String, AST> functionsAst, HashMap<String, Assign> elements) {
+    public CodeGenerator(AST ast, HashMap<String, AST> functionsAst, ArrayList<HashMap<String, Assign>> encloseVariables) {
         this.ast = ast;
         this.functionsAst = functionsAst;
-        this.elements = elements;
+        this.encloseVariables = encloseVariables;
     }
 
     public void generateCode(){
@@ -45,14 +49,26 @@ public class  CodeGenerator {
     }
 
     private String configData() {
-        String result = "\n.data\n" +
+        StringBuilder result = new StringBuilder("\n.data\n" +
                 "Header db \" Result \" ,0" +
                 "\n textBuf dd 45 dup(?)\n" +
-                "result dd 0";
-
-        for (Assign as:elements.values()
+                "result dd 0 dup(0)\n");
+        HashSet<String> names = makeSetOfVariables();
+        for (String name:names
              ) {
-            result+=as.generateInitialisation();
+            result.append(name).append("dd 0 dup(0)\n");
+        }
+        return result.toString();
+    }
+
+    private HashSet<String> makeSetOfVariables() {
+        HashSet<String> result = new HashSet<>();
+        for (HashMap<String, Assign> map:encloseVariables
+             ) {
+            for (Assign assign:map.values()
+                 ) {
+                result.add(assign.name);
+            }
         }
         return result;
     }
@@ -93,6 +109,6 @@ public class  CodeGenerator {
             result.append(tokens[i]+"/");
         }
         result.append("2-17-java-IO-81-Melniichuk.asm").toString();
-        return "2-17-java-IO-81-Melniichuk.asm";
+        return "4-17-java-IO-81-Melniichuk.asm";
     }
 }

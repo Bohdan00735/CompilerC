@@ -31,12 +31,7 @@ public class Assign extends Node {
     }
 
     public String generateInitialisation(){
-        String result = "\n"+name+" dd ";
-        if (type==KeyWords.INT){
-            result+="0";
-        }else result+="0.0";
-
-        return result+"\n";
+        return "\n"+name+" dd 0 dup(0) \n";
     }
 }
 

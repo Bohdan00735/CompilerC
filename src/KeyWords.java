@@ -16,7 +16,9 @@ public enum KeyWords{
     EXCLAMATION_POINT,
     EQUALS,
     OR,
-    MINUS
+    MINUS,
+    IF,
+    ELSE
 
 }
 

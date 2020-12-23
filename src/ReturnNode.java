@@ -1,7 +1,7 @@
 public class ReturnNode extends Node{
-    Function parentNode;
+    Compound parentNode;
 
-    public ReturnNode(Token thisToken, Function parentNode) {
+    public ReturnNode(Token thisToken, Compound parentNode) {
         super(thisToken);
         this.parentNode = parentNode;
     }
@@ -14,7 +14,8 @@ public class ReturnNode extends Node{
             res.append(child.generateCode());
         }
         res.append("\npop result\n");
-        switch (parentNode.returnType){
+        Function parentFunction = parentNode.getParentFunction();
+        switch (parentFunction.returnType){
             case FLOAT:
                 res.append("Push Offset textBuf\n" +
                     "Push result\n" +
