@@ -64,6 +64,6 @@ public class  CodeGenerator {
             result.append(tokens[i]+"/");
         }
         result.append("2-17-java-IO-81-Melniichuk.asm").toString();
-        return "6-17-java-IO-81-Melniichuk.asm";
+        return "KR-17-java-IO-81-Melniichuk.asm";
     }
 }

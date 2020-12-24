@@ -25,7 +25,8 @@ public enum KeyWords{
     WHILE,
     BREAK,
     CONTINUE,
-    DIVISION
+    DIVISION,
+    LESS_EQUALS
 
 }
 

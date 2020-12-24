@@ -29,6 +29,7 @@ public class Converter {
         keyWordsStringHashtable.put("break", KeyWords.BREAK);
         keyWordsStringHashtable.put("continue", KeyWords.CONTINUE);
         keyWordsStringHashtable.put("/", KeyWords.DIVISION);
+        keyWordsStringHashtable.put("<=", KeyWords.LESS_EQUALS);
 
     }
 

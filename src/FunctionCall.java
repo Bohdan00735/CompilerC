@@ -10,6 +10,12 @@ public class FunctionCall extends Term {
         this.parameters = arguments;
     }
 
+    public FunctionCall( String functionName, ArrayList<Term> parameters, Node parentNode) {
+        super(parentNode);
+        this.functionName = functionName;
+        this.parameters = parameters;
+    }
+
     @Override
     public String generateCode() {
         try {

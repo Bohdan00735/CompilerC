@@ -10,6 +10,7 @@ Parser {
     ListIterator<Token> tokenIterator;
     int conditionalCounter = 0;
     int cyclesCounter = 0;
+    int pointerCounter = 0;
     private int startStackIndex = -4;
 
     public Parser(ArrayList<Token> tokens) {
@@ -143,7 +144,8 @@ Parser {
                     checkSemicolon();
 
                     root.addChildNode(new Assign(assign,
-                            new BinaryExpression(new LinkOnVar(assign.stackPointer), KeyWords.PLUS,new Num(new Token(KeyWords.NUM,"1"))), root));
+                            new BinaryExpression(new LinkOnVar(assign.stackPointer), KeyWords.PLUS,new Num(new Token(KeyWords.NUM,"1")), pointerCounter), root));
+                    pointerCounter++;
                     break;
                 case LCBRAC:
                     Compound newCompound = new Compound(currentToken, root, root.stackIndex);
@@ -301,9 +303,35 @@ Parser {
         if (token.type!=KeyWords.EQUALS){
             throw new MySyntaxError(token.line, token.column, "Equals symbol expected");
         }
-        newAssign = new Assign(assign, parseMathHierarchy(rootCompound), rootCompound);
+
+        newAssign = new Assign(assign, checkTransformationOrParse(rootCompound), rootCompound);
         checkSemicolon();
         return newAssign;
+    }
+
+    Term checkTransformationOrParse(Compound rootCompound){
+        if (tokenIterator.next().type==KeyWords.LPAR){
+            if (tokenIterator.next().type == KeyWords.INT){
+                checkCloseScope(tokenIterator.next());
+                ArrayList<Term> arguments = new ArrayList<>();
+                arguments.add(parseMathHierarchy(rootCompound));
+                addConvertFunction();
+                return new FunctionCall("convertToInt",arguments,rootCompound);
+            }
+            tokenIterator.previous();
+        }
+        tokenIterator.previous();
+        return parseMathHierarchy(rootCompound);
+    }
+
+    private void addConvertFunction() {
+        String name = "convertToInt";
+        if (functionsAst.containsKey(name)) return;
+        HashMap<String, Integer> param = new HashMap<>();
+        param.put("number",8);
+        Function function = new Function(mainAst,KeyWords.INT,param,name);
+        functionsAst.put(name, param);
+        mainAst.addChildNode(function);
     }
 
     private Assign parseDeclaration(Compound root, KeyWords type) {
@@ -324,7 +352,7 @@ Parser {
             return result;
         }
 
-        result = new Assign((EmptyAssign) result,parseMathHierarchy(root), root);
+        result = new Assign(result,checkTransformationOrParse(root), root);
         root.addAssign(result,name);
         checkSemicolon();
 
@@ -381,9 +409,10 @@ Parser {
         tokenIterator.previous();
         Token next = tokenIterator.next();
         boolean toDeploy = false;
-        while (next.type == KeyWords.OR){
+        while (next.type == KeyWords.OR || next.type == KeyWords.LESS_EQUALS){
             Term nextTerm = analiseMathExpresion(rootCompound);
-            term = new BinaryExpression(term, next.type, nextTerm);
+            term = new BinaryExpression(term, next.type, nextTerm, pointerCounter);
+            pointerCounter++;
             next = tokenIterator.previous();
             toDeploy = true;
         }
@@ -397,7 +426,8 @@ Parser {
         boolean toDeploy = false;
         while (next.type == KeyWords.PLUS || next.type == KeyWords.MINUS){
             Term nextTerm = parseExpresion(rootCompound);
-            term = new BinaryExpression(term, next.type, nextTerm);
+            term = new BinaryExpression(term, next.type, nextTerm, pointerCounter);
+            pointerCounter++;
             next = tokenIterator.previous();
             toDeploy = true;
         }
@@ -410,7 +440,8 @@ Parser {
         Token next = tokenIterator.next();
         while (next.type == KeyWords.DIVISION){
             Term nextTerm = parseTerm(rootCompound);
-            term = new BinaryExpression(term, next.type, nextTerm);
+            term = new BinaryExpression(term, next.type, nextTerm, pointerCounter);
+            pointerCounter++;
             next = tokenIterator.next();
         }
         return term;

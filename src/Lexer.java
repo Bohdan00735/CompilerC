@@ -33,10 +33,9 @@ public class Lexer {
         text = text.replace("(", " ( ");
         text = text.replace(")", " ) ");
         text = text.replace("!", " ! ");
-        text = text.replace("+ ", " + ");
         text = text.replace("++", " ++ ");
         text = text.replace(";", " ; ");
-        text = text.replace("=", " = ");
+        text = text.replace("=", "= ");
         text = text.replace("-", " - ");
         text = text.replace("||", " || ");
         text = text.replace("if", " if ");
@@ -47,6 +46,7 @@ public class Lexer {
         text = text.replace("while", " while ");
         text = text.replace("continue", "continue ");
         text = text.replace("break", "break ");
+        text = text.replace("<=", " <= ");
         return text;
     }
 

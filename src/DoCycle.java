@@ -32,7 +32,7 @@ public class DoCycle extends Compound{
         result.append("\n _endCycle"+id+":\n"+ exitCondition.generateCode()+
                 "\n pop eax\n"+
                 "cmp eax, 0\n" +
-                "jne _startCycle"+id+"\n"+
+                "je _startCycle"+id+"\n"+
                 "_exitCycle"+id+":\n");
 
         return result.toString();

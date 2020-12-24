@@ -25,33 +25,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4cee570d-230e-4fe2-a1e2-be3382364d69" name="Default Changelist" comment="function call and if statement fix">
-      <change afterPath="$PROJECT_DIR$/src/BreakInstruction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ContinueInstruction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/DoCycle.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Instruction.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/BinaryExpression$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/BinaryExpression$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/BinaryExpression.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/BinaryExpression.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/CodeGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/CodeGenerator.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Converter.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Converter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Function.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Function.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/KeyWords.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/KeyWords.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Lexer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Lexer.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Parser$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Parser$1.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/CompilerC/Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/Parser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/ReturnNode.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/ReturnNode.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/CompilerC/UnaryExpression.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/CompilerC/UnaryExpression.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/BinaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/BinaryExpression.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CodeGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CodeGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Compound.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Compound.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Conditional.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Conditional.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Converter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DoCycle.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DoCycle.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Function.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Function.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/FunctionCall.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FunctionCall.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/FunctionDeclaration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FunctionDeclaration.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/KeyWords.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/KeyWords.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Lexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Lexer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ReturnNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ReturnNode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/UnaryExpression.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/UnaryExpression.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Term.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Term.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,6 +134,7 @@
       <workItem from="1608748511116" duration="27379000" />
       <workItem from="1608794489863" duration="17278000" />
       <workItem from="1608816544316" duration="6062000" />
+      <workItem from="1608826398945" duration="6729000" />
     </task>
     <task id="LOCAL-00001" summary="binary and unary expressions">
       <created>1607678370513</created>
@@ -281,13 +276,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/Parser.java</url>
-          <line>30</line>
-          <option name="timeStamp" value="62" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Parser.java</url>
-          <line>116</line>
-          <option name="timeStamp" value="75" />
+          <line>99</line>
+          <option name="timeStamp" value="77" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

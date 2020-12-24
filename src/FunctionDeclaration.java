@@ -14,6 +14,13 @@ public class FunctionDeclaration extends Node{
         this.name = name;
     }
 
+    public FunctionDeclaration(Node parentNode, KeyWords returnType, Map<String, Integer> inputParam, String name) {
+        super(parentNode);
+        this.returnType = returnType;
+        this.inputParam = inputParam;
+        this.name = name;
+    }
+
     @Override
     public String generateCode() {
         return "";

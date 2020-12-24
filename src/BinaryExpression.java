@@ -3,15 +3,16 @@ public class BinaryExpression extends Expression {
     Term rightOperand;
     private int pointersCounter = 0;
 
-    public BinaryExpression(Term leftOperand, KeyWords operator, Term rightOperand) {
+    public BinaryExpression(Term leftOperand, KeyWords operator, Term rightOperand, int pointersCounter) {
         super(operator);
         this.leftOperand = leftOperand;
         this.rightOperand = rightOperand;
+        this.pointersCounter = pointersCounter;
     }
 
     @Override
     public String generateCode() {
-        if (super.getOperator() == KeyWords.OR){
+        if (super.getOperator() == KeyWords.OR || super.getOperator() == KeyWords.LESS_EQUALS){
             return generateForLogicOperation();
         }
         String result = leftOperand.generateCode() +
@@ -48,6 +49,17 @@ public class BinaryExpression extends Expression {
                         "setne al;\n" +
                         "push eax;\n" +
                         "_endOperation"+pointersCounter+":\n";
+            case LESS_EQUALS:
+                result+=rightOperand.generateCode()+
+                        "\n pop ebx;\n" +
+                        "pop eax;\n" +
+                        "cmp eax, ebx\n" +
+                        "jle _returnTrue"+pointersCounter+
+                        "\n push 1\n" +
+                        "jmp _continueStatment"+pointersCounter+
+                        "\n_returnTrue"+pointersCounter+":\n" +
+                        "push 0\n" +
+                        "_continueStatment"+pointersCounter+":\n";
         }
         pointersCounter++;
         return result;
