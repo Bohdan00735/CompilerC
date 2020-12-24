@@ -7,6 +7,8 @@ public class LinkOnVar extends Term{
 
     @Override
     public String generateCode() {
+        if (link>0) return "mov eax,[ebp+"+ link +
+                "]\npush eax\n";
         return "mov eax,[ebp"+ link +
                 "]\npush eax\n";
     }

@@ -1,21 +1,15 @@
 
-import javax.print.DocFlavor;
-import java.lang.reflect.Parameter;
-import java.security.Key;
-import java.security.KeyException;
 import java.util.*;
-import java.util.function.ToDoubleBiFunction;
 
 public class
 
 Parser {
     ArrayList<Token> tokens;
     AST mainAst;
-    HashMap<String, AST> functionsAst;
+    HashMap<String, Map<String, Integer>> functionsAst;
     ListIterator<Token> tokenIterator;
     int conditionalCounter = 0;
     private int startStackIndex = -4;
-
 
     public Parser(ArrayList<Token> tokens) {
         this.tokens = tokens;
@@ -23,48 +17,78 @@ Parser {
 
     public AST parse(){
         functionsAst = new HashMap<>();
+        mainAst = new AST();
         for (tokenIterator = tokens.listIterator(); tokenIterator.hasNext();){
             Token current = tokenIterator.next();
             if (current.type == KeyWords.INT || current.type == KeyWords.FLOAT){
                 Token next = tokenIterator.next();
                 switch (next.type){
                     case MAIN:
-                        mainAst = analiseFunction(current.type, null, next);
+                        mainAst.addChildNode(analiseFunction(current.type, mainAst));
                         continue;
 
-                    case LINE:
-                        functionsAst.put(current.marking, analiseFunction(current.type, mainAst.getRoot(), next));
-
-                        //TODO for param
+                    case ID:
+                        mainAst.addChildNode(analiseFunction(current.type, mainAst));
                 }
 
             }else {
             throw new MySyntaxError(current.line, 0, "function or declaration expected");
             }
         }
+        mainAst.setFunctions(functionsAst);
         return mainAst;
     }
 
-    private AST analiseFunction(KeyWords returnType,Node parentNode, Token startToken) {
-        Function root =  new Function(startToken, parentNode,startStackIndex,returnType, startToken.marking, analiseInput(tokenIterator));
-        Token currentToken = tokenIterator.next();
+    private FunctionDeclaration analiseFunction(KeyWords returnType,Node parentNode) {
+        Token currentToken = tokenIterator.previous();
+        tokenIterator.next();
+        Token startToken = currentToken;
+        String name = currentToken.marking;
+        Map<String, Integer> arguments = analiseInput();
+        compareWithExistDeclaration(currentToken.line, currentToken.column,name, arguments.values().size());
+        if (currentToken.type == KeyWords.SEMICOLON){
+            FunctionDeclaration declaration = new FunctionDeclaration(startToken,returnType,arguments,name, parentNode);
+            functionsAst.put(name, arguments);
+            return declaration;
+        }
+        isFunctionDefined(name,currentToken.line, currentToken.column);
+        Function root =  new Function(startToken,returnType,arguments,name, parentNode);
+        functionsAst.put(root.name, root.inputParam);
+        currentToken = tokenIterator.next();
         if (currentToken.type != KeyWords.LCBRAC){
             throw new MySyntaxError(currentToken.line, currentToken.column,
                     "LCBRAC expected");
         }
-        while (currentToken.type == KeyWords.LCBRAC){
-            Compound newCompound = new Compound(currentToken, root,startStackIndex);
-            parseCompound(newCompound);
-            root.addChildNode(newCompound);
-            if (!tokenIterator.hasNext()){return new AST(root);}
-            currentToken = tokenIterator.next();
-        }
 
-        return new AST(root);
+        Compound newCompound = new Compound(currentToken, root,startStackIndex);
+        parseCompound(newCompound);
+        root.setChildCompound(newCompound);
+
+        return root;
+    }
+    private void isFunctionDefined(String name, int raw, int column){
+        if(mainAst.getChildNodes() == null)return;
+        for (Node child:mainAst.getChildNodes()
+             ) {
+            if (child.getClass() == Function.class){
+                Function function = (Function) child;
+                if (function.name.equals(name)){
+                    throw new MySyntaxError(raw,column,"Function with that name was defined earlier");
+                }
+            }
+        }
+    }
+
+    private void compareWithExistDeclaration(int line, int column, String name, int size) {
+        if (functionsAst.containsKey(name)){
+            if (functionsAst.get(name).values().size() != size){
+                throw new MySyntaxError(line,column,"That function was declared earlier with another num of parameters");
+            }
+        }
     }
 
 
-    private Compound parseCompound(Compound root) {
+    private void parseCompound(Compound root) {
         while (tokenIterator.hasNext()){
             Token currentToken = tokenIterator.next();
             switch (currentToken.type){
@@ -73,7 +97,7 @@ Parser {
                     root.addChildNode(parseDeclaration(root, currentToken.type));
                     break;
                 case ID:
-                    root.addChildNode(parseAssign(root));
+                    root.addChildNode(assignOrCall(root));
                     break;
                 case RETURN:
                     ReturnNode returnNode = new ReturnNode(currentToken, root);
@@ -82,6 +106,19 @@ Parser {
                     break;
                 case IF:
                     root.addChildNode(parseConditional(root));
+                    break;
+                case PREFIX_PLUS:
+                    Assign assign;
+                    try {
+                        assign = root.getVariableAssign(tokenIterator.next().marking);
+                    }catch (NullPointerException exception){
+                        throw new MySyntaxError(currentToken.line, currentToken.column, "declared variable expected");
+                    }
+                    tokenIterator.next();
+                    checkSemicolon();
+
+                    root.addChildNode(new Assign(assign,
+                            new BinaryExpression(new LinkOnVar(assign.stackPointer), KeyWords.PLUS,new Num(new Token(KeyWords.NUM,"1"))), root));
                     break;
                 case LCBRAC:
                     Compound newCompound = new Compound(currentToken, root, root.stackIndex);
@@ -93,10 +130,66 @@ Parser {
                         throw new MySyntaxError(currentToken.line, currentToken.column,
                                 "error syntax");
                     }
-                    return null;
+                    return;
             }
         }
-        return null;
+    }
+
+    private Node assignOrCall(Compound root) {
+        Token currentToken = tokenIterator.next();
+        if (currentToken.type == KeyWords.EQUALS){
+            tokenIterator.previous();
+            return parseAssign(root);
+        }
+        if (currentToken.type == KeyWords.LPAR){
+            tokenIterator.previous();
+            return parseCallFunction(root);
+        }
+        throw new MySyntaxError(currentToken.line, currentToken.column,
+                "error syntax's");
+    }
+
+    private FunctionCall parseCallFunction(Compound root) {
+        Token currentToken = tokenIterator.previous();
+        tokenIterator.next();
+        String name = currentToken.marking;
+        FunctionCall functionCall = new FunctionCall(name, parseParameters(root), root);
+        return functionCall;
+    }
+
+
+    private ArrayList<Term> parseParameters(Compound root) {
+        Token token = tokenIterator.next();
+        if (token.type!= KeyWords.LPAR){
+            throw new MySyntaxError(token.line, token.column, "Open scope expected");
+        }
+        ArrayList<Term> parameters = new ArrayList<>();
+        token = tokenIterator.next();
+        while (token.type == KeyWords.ID || token.type == KeyWords.NUM){
+            tokenIterator.previous();
+            parameters.add(parseTerm(root));
+
+            token = tokenIterator.next();
+            if (token.type != KeyWords.COMA) break;
+            token = tokenIterator.next();
+        }
+        if (token.type != KeyWords.RPAR){
+            throw new MySyntaxError(token.line, token.column, "Close scope expected");
+        }
+
+        return parameters;
+    }
+
+    private void checkComa() {
+        Token token = tokenIterator.previous();
+        if (token.type != KeyWords.COMA){
+            throw new MySyntaxError(token.line, token.column, "Coma  expected");
+        }
+    }
+
+    private void backIterator(){
+        tokenIterator.previous();
+        tokenIterator.next();
     }
 
     private Conditional parseConditional(Compound root) {
@@ -135,6 +228,7 @@ Parser {
     private Assign parseAssign(Compound rootCompound) {
         Token token = tokenIterator.previous();
         tokenIterator.next();//to deploy iterator
+        Assign newAssign;
         Assign assign;
         try {
             assign = rootCompound.getVariableAssign(token.marking);
@@ -145,15 +239,9 @@ Parser {
         if (token.type!=KeyWords.EQUALS){
             throw new MySyntaxError(token.line, token.column, "Equals symbol expected");
         }
-        if (assign.getClass() == EmptyAssign.class){
-            assign = new Assign((EmptyAssign) assign, parseMathHierarchy(rootCompound));
-            rootCompound.changeToFullAssign(assign, assign.getName());
-        }else {
-            assign.setEquivalent(parseMathHierarchy(rootCompound));
-        }
-
+        newAssign = new Assign(assign, parseMathHierarchy(rootCompound), rootCompound);
         checkSemicolon();
-        return assign;
+        return newAssign;
     }
 
     private Assign parseDeclaration(Compound root, KeyWords type) {
@@ -164,7 +252,7 @@ Parser {
         }
         String name = token.marking;
         if (root.checkLocalVariables(name)){throw new MySyntaxError(token.line, token.column, "variable with that name was declared earlier");}
-        Assign result = new EmptyAssign(name, type, root.stackIndex);
+        Assign result = new EmptyAssign(name, type, root.stackIndex, root);
         root.stackIndex-=4;
         token = tokenIterator.next();
 
@@ -174,7 +262,7 @@ Parser {
             return result;
         }
 
-        result = new Assign((EmptyAssign) result,parseMathHierarchy(root));
+        result = new Assign((EmptyAssign) result,parseMathHierarchy(root), root);
         root.addAssign(result,name);
         checkSemicolon();
 
@@ -190,33 +278,33 @@ Parser {
     }
 
 
-    private Map<KeyWords, String> analiseInput(Iterator<Token> tokenIterator){
-        Map<KeyWords, String> inputs = new HashMap<>();
-        tokenIterator.next();
+    private Map<String,Integer> analiseInput(){
+        HashMap<String,Integer> inputs = new HashMap<>();
+        int local_param_offset = +8;
 
-        while (tokenIterator.hasNext()){
-            Token currentToken = tokenIterator.next();
-            if (currentToken.type == KeyWords.RPAR){return inputs;}
-            Token nextToken = tokenIterator.next();
-            switch (currentToken.type){
-                case INT:
-
-                    if (isNextWord(nextToken) != null){inputs.put(KeyWords.INT,nextToken.marking);
-
-                    }else{
-                        throw new MySyntaxError( nextToken.line,nextToken.column,"name of param missed");
-                    }
-                    continue;
-                case FLOAT:
-
-                    if (isNextWord(nextToken) != null){inputs.put(KeyWords.INT,nextToken.marking);
-                    }else{
-                        throw new MySyntaxError(nextToken.line,nextToken.column,"name of param missed");
-                    }
+        Token currentToken = tokenIterator.next();
+        if (currentToken.type != KeyWords.LPAR){
+            throw new MySyntaxError( currentToken.line,currentToken.column,"open brace expected");
+        }
+        currentToken = tokenIterator.next();
+        while (currentToken.type == KeyWords.INT || currentToken.type == KeyWords.FLOAT){
+            KeyWords type = currentToken.type;
+            currentToken = tokenIterator.next();
+            if (currentToken.type != KeyWords.ID){
+                throw new MySyntaxError( currentToken.line,currentToken.column,"some name expected");
             }
-
-        }return null;
-
+            inputs.put(currentToken.marking, local_param_offset);
+            local_param_offset+=4;
+            currentToken = tokenIterator.next();
+            if (currentToken.type != KeyWords.COMA){
+                break;
+            }
+            currentToken = tokenIterator.next();
+        }
+        if (currentToken.type!=KeyWords.RPAR){
+            throw new MySyntaxError( currentToken.line,currentToken.column,"close brace expected");
+        }
+        return inputs;
     }
 
     private Node formReturn(Compound rootCompound){
@@ -267,19 +355,34 @@ Parser {
             case NUM:
                 return new Num(next);
             case ID:
-                if (rootCompound.checkForVariable(next.marking)){
-                    if (rootCompound.getVariableAssign(next.marking).equivalent == null){
-                        throw new MySyntaxError(next.line, next.column,
-                                "variable \""+next.marking+ "\" wasn`t initialized and uses");
-                    }
-                    return new LinkOnVar(rootCompound.getDepthOfFirstUse(next.marking));
-                }else {
-                    throw new MySyntaxError(next.line, next.column,
-                            "variable with \""+next.marking+ "\" name wasn't declared earlier");
-                }
+                return variableOrCall(next, rootCompound);
+
 
             default:
                 throw new MySyntaxError(next.line, next.column, "Some term expected");
+        }
+    }
+
+    private Term variableOrCall(Token token, Compound root) {
+        Token next = tokenIterator.next();
+        if (next.type == KeyWords.LPAR){
+            tokenIterator.previous();
+            return parseCallFunction(root);
+        }
+        return parseVariableLink(token, root);
+    }
+
+    private Term parseVariableLink(Token next, Compound rootCompound) {
+        if (rootCompound.checkForVariable(next.marking)){
+            if (rootCompound.isVariableAssign(next.marking)){
+                throw new MySyntaxError(next.line, next.column,
+                        "variable \""+next.marking+ "\" wasn`t initialized and uses");
+            }
+            tokenIterator.previous();
+            return new LinkOnVar(rootCompound.getDepthOfFirstUse(next.marking));
+        }else {
+            throw new MySyntaxError(next.line, next.column,
+                    "variable with \""+next.marking+ "\" name wasn't declared earlier");
         }
     }
 

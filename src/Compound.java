@@ -3,7 +3,7 @@ import java.util.HashMap;
 public class Compound extends Node{
     Compound parentCompound;
     HashMap<String, Assign> elements;
-
+    Function parentFunction;
     int stackIndex;
 
     public Compound(Token thisToken, Compound parentCompound, int stackIndex) {
@@ -12,15 +12,16 @@ public class Compound extends Node{
         this.stackIndex = stackIndex;
     }
 
-    public Compound(Token thisToken, Node parentNode, int stackIndex) {
-        super(thisToken, parentNode);
+    public Compound(Token thisToken, Function parentFunction, int stackIndex) {
+        super(thisToken);
+        this.parentFunction = parentFunction;
         this.stackIndex = stackIndex;
     }
 
 
     protected Function getParentFunction() {
-        if (parentCompound.getClass() == Function.class){
-            return (Function)parentCompound;
+        if (parentCompound == null){
+            return parentFunction;
         }
         return parentCompound.getParentFunction();
     }
@@ -38,7 +39,7 @@ public class Compound extends Node{
 
     public boolean checkForVariable(String marking) {
         if(elements != null) if(elements.containsKey(marking)) return true;
-        if (parentCompound == null) return false;
+        if (parentCompound == null) return parentFunction.checkInParam(marking);
         return parentCompound.checkForVariable(marking);
     }
 
@@ -72,15 +73,34 @@ public class Compound extends Node{
 
     private String resetLocalVariables() {
         if (elements == null) return "";
-        return "\n ret "+ (elements.values().size()-1)*4+"\n";
+        return "";
+        //return "\n ret "+ (elements.values().size()-1)*4+"\n";
     }
 
     public int getDepthOfFirstUse(String marking) {
         if(elements != null){
             if(elements.containsKey(marking)) return elements.get(marking).stackPointer;
         }
+        if (parentFunction!=null){
+            if(parentFunction.checkInParam(marking)){
+                return parentFunction.inputParam.get(marking);
+            }
+        }
         return parentCompound.getDepthOfFirstUse(marking);
     }
 
 
+    public boolean isVariableAssign(String marking) {
+        if (checkLocalVariables(marking)){return elements.get(marking).equivalent==null;}
+        if (parentFunction!=null){
+            return !parentFunction.checkInParam(marking);
+        }
+        return parentCompound.isVariableAssign(marking);
+    }
+
+    @Override
+    protected boolean isFunction(String functionName, int parameters) {
+        if(parentCompound != null) return parentCompound.isFunction(functionName, parameters);
+        return parentFunction.isFunction(functionName, parameters);
+    }
 }

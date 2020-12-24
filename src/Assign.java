@@ -5,13 +5,15 @@ public class Assign extends Node {
     int stackPointer;
 
 
-    public Assign(String name, KeyWords type, int stackPointer) {
+    public Assign(String name, KeyWords type, int stackPointer, Node parentNode) {
+        super(parentNode);
         this.name = name;
         this.type = type;
         this.stackPointer= stackPointer;
     }
 
-    public Assign(EmptyAssign emptyAssign,Term equivalent) {
+    public Assign(Assign emptyAssign,Term equivalent, Node parentNode) {
+        super(parentNode);
         name = emptyAssign.name;
         type = emptyAssign.type;
         stackPointer = emptyAssign.stackPointer;

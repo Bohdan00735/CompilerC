@@ -1,14 +1,10 @@
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 public class  CodeGenerator {
     private AST ast;
     private String asmCode;
-    private HashMap<String, AST> functionsAst;
+
 
 
 
@@ -23,9 +19,8 @@ public class  CodeGenerator {
             "includelib \\masm32\\lib\\user32.lib\n" +
             "include module.inc;";
 
-    public CodeGenerator(AST ast, HashMap<String, AST> functionsAst) {
+    public CodeGenerator(AST ast) {
         this.ast = ast;
-        this.functionsAst = functionsAst;
     }
 
     public void generateCode(){
@@ -33,54 +28,32 @@ public class  CodeGenerator {
         asmCode += configData();
 
         if (ast == null){
-            throw new MySyntaxError(0,0, "main not found");
-        }
-        if (functionsAst.size() > 0){
-            //analise and create functions from functionsAst
+            throw new MySyntaxError(0,0, "functions not found");
         }
         else {
 
             asmCode += "\n .code \n";
             //build main proc
-            asmCode+=configMain();
+            asmCode+= ast.generateCode();
             asmCode+= "\n\r end main";
         }
     }
 
     private String configData() {
-        StringBuilder result = new StringBuilder("\n.data\n" +
+        return "\n.data\n" +
                 "Header db \" Result \" ,0" +
                 "\n textBuf dd 45 dup(?)\n" +
-                "result dd 0 dup(0)\n");
-        return result.toString();
+                "result dd 0 dup(0)\n";
     }
 
-
-    private  String configMain(){
-        StringBuilder function = new StringBuilder("main: \n");
-        for (Node child:ast.getRoot().getChildNodes()
-             ) {
-            function.append(child.generateCode());
-        }
-        function.append("Invoke ExitProcess, 0");
-        return function.toString();
-    }
-
-    public String writeFunc(){
-        //TODO
-        return null;
-    }
-
-    public boolean createFile(String fileName){
+    public void createFile(String fileName){
         try(FileWriter writer = new FileWriter(fileName, false))
         {
             writer.write(asmCode);
             writer.flush();
-            return true;
         }
         catch(IOException ex){
             System.out.println(ex.getMessage());
-            return false;
         }
     }
 

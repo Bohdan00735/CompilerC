@@ -18,7 +18,9 @@ public enum KeyWords{
     OR,
     MINUS,
     IF,
-    ELSE
+    ELSE,
+    PREFIX_PLUS,
+    COMA
 
 }
 

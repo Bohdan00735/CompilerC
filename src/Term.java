@@ -9,6 +9,10 @@ public class Term extends  Node {
     public Term() {
     }
 
+    public Term(Node parentNode) {
+        super(parentNode);
+    }
+
     public Term(Token thisToken) {
         super(thisToken);
     }

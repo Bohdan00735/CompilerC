@@ -33,13 +33,15 @@ public class Lexer {
         text = text.replace("(", " ( ");
         text = text.replace(")", " ) ");
         text = text.replace("!", " ! ");
-        text = text.replace("+", " + ");
+        text = text.replace("+ ", " + ");
+        text = text.replace("++", " ++ ");
         text = text.replace(";", " ; ");
         text = text.replace("=", " = ");
         text = text.replace("-", " - ");
         text = text.replace("||", " || ");
         text = text.replace("if", " if ");
         text = text.replace("else", " else ");
+        text = text.replace(",", " , ");
         return text;
     }
 

@@ -1,6 +1,6 @@
 public class EmptyAssign extends Assign{
-    public EmptyAssign(String name, KeyWords type, int stackPointer) {
-        super(name, type, stackPointer);
+    public EmptyAssign(String name, KeyWords type, int stackPointer, Node parent) {
+        super(name, type, stackPointer, parent);
     }
 
     @Override

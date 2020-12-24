@@ -18,6 +18,10 @@ public class Node {
     public Node() {
     }
 
+    public Node(Node parentNode) {
+        this.parentNode = parentNode;
+    }
+
     public Node[] getChildNodes() {
         return childNodes;
     }
@@ -51,4 +55,12 @@ public class Node {
     }
 
 
+    protected boolean isFunction(String functionName, int parameters) {
+        return parentNode.isFunction(functionName, parameters);
+    }
+
+    protected boolean isParentMainFunction() {
+        if (parentNode == null) return false;
+        return isParentMainFunction();
+    }
 }

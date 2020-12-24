@@ -11,6 +11,11 @@ public class Token {
         this.column = column;
     }
 
+    public Token(KeyWords type, String marking) {
+        this.type = type;
+        this.marking = marking;
+    }
+
     public Token(KeyWords type, int line, int column) {
         this.type = type;
         this.line = line;

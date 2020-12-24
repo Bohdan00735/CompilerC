@@ -17,11 +17,13 @@ public class Converter {
         keyWordsStringHashtable.put( ";", KeyWords.SEMICOLON);
         keyWordsStringHashtable.put("!", KeyWords.EXCLAMATION_POINT);
         keyWordsStringHashtable.put("+", KeyWords.PLUS);
+        keyWordsStringHashtable.put("++", KeyWords.PREFIX_PLUS);
         keyWordsStringHashtable.put("=", KeyWords.EQUALS);
         keyWordsStringHashtable.put("||",KeyWords.OR);
         keyWordsStringHashtable.put("-",KeyWords.MINUS);
         keyWordsStringHashtable.put("if",KeyWords.IF);
         keyWordsStringHashtable.put("else", KeyWords.ELSE);
+        keyWordsStringHashtable.put(",",KeyWords.COMA);
 
     }
 
