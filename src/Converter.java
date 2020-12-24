@@ -24,6 +24,11 @@ public class Converter {
         keyWordsStringHashtable.put("if",KeyWords.IF);
         keyWordsStringHashtable.put("else", KeyWords.ELSE);
         keyWordsStringHashtable.put(",",KeyWords.COMA);
+        keyWordsStringHashtable.put("do",KeyWords.DO);
+        keyWordsStringHashtable.put("while",KeyWords.WHILE);
+        keyWordsStringHashtable.put("break", KeyWords.BREAK);
+        keyWordsStringHashtable.put("continue", KeyWords.CONTINUE);
+        keyWordsStringHashtable.put("/", KeyWords.DIVISION);
 
     }
 

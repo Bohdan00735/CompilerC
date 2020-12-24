@@ -16,8 +16,8 @@ public class BinaryExpression extends Expression {
         }
         String result = leftOperand.generateCode() +
                 rightOperand.generateCode() +
-                "\n\r pop ebx;\n" +
-                "pop eax;\n\r";
+                "\n pop ebx;\n" +
+                "pop eax;\n";
         switch (super.getOperator()){
             case PLUS:
                 result+="add eax, ebx;";
@@ -25,6 +25,10 @@ public class BinaryExpression extends Expression {
             case MINUS:
                 result+="sub eax, ebx";
                 break;
+            case DIVISION:
+                result+="xor edx, edx\n" +
+                        "div ebx";
+
         }
         result+="\n\r push eax; \n\r";
         return result;

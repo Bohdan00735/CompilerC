@@ -4,8 +4,8 @@ public class FunctionCall extends Term {
     String functionName;
     ArrayList<Term> parameters;
 
-    public FunctionCall(String functionName, ArrayList<Term> arguments, Node parentNode) {
-        super(parentNode);
+    public FunctionCall(String functionName, ArrayList<Term> arguments, Node parentNode, Token token) {
+        super( token, parentNode);
         this.functionName = functionName;
         this.parameters = arguments;
     }
@@ -15,7 +15,7 @@ public class FunctionCall extends Term {
         try {
             parentNode.isFunction(functionName, parameters.size());
         }catch (MySyntaxError error){
-            error.line = getToken().line;
+            error.line = parentNode.getToken().line;
             error.column = getToken().column;
             throw error;
         }

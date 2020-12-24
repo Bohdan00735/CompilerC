@@ -21,9 +21,9 @@ public class UnaryExpression extends Expression {
 
     @Override
     public String generateCode() {
-        return childTerm.generateCode() + "\n\r pop eax;\n" +
-                "cmp eax,0;\n" +
+        return childTerm.generateCode() + "\n\r pop ebx;\n" +
                 "xor eax,eax;\n" +
+                "cmp ebx,0;\n" +
                 "setne al;\n" +
                 "push eax;\n\r";
     }

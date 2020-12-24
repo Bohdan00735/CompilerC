@@ -19,7 +19,7 @@ public class ReturnNode extends Node{
         return res.append("\npop eax\n " +
                 "\nmov ebp, esp \n" +
                 "pop ebp\n" +
-                "ret " + (-parentNode.stackIndex-4)/4).toString();
+                "ret " + (-parentNode.stackIndex-4)).toString();
     }
 
     private String configReturnOutput() {
@@ -35,7 +35,8 @@ public class ReturnNode extends Node{
                 res.append("Push Offset textBuf\n" +
                         "Push result\n" +
                         "call FloatToDec32\n" +
-                        "invoke MessageBoxA, 0, ADDR textBuf, ADDR Header, 0\n");
+                        "invoke MessageBoxA, 0, ADDR textBuf, ADDR Header, 0\n" +
+                        "INVOKE ExitProcess,0\n");
                 break;
             case INT:
                 res.append("push offset textBuf\n" +
@@ -43,7 +44,7 @@ public class ReturnNode extends Node{
                         "  push 128\n" +
                         "  call HexToDec\n" +
                         "  invoke MessageBoxA, 0, ADDR textBuf, ADDR Header, 0\n" +
-                        "ret\n");
+                        "INVOKE ExitProcess,0\n");
                 break;
         }
         return res.toString();

@@ -103,4 +103,11 @@ public class Compound extends Node{
         if(parentCompound != null) return parentCompound.isFunction(functionName, parameters);
         return parentFunction.isFunction(functionName, parameters);
     }
+
+    public int getId(){
+        if (parentCompound == null){
+            throw new NullPointerException();
+        }
+        return parentCompound.getId();
+    }
 }

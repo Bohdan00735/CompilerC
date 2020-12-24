@@ -20,7 +20,12 @@ public enum KeyWords{
     IF,
     ELSE,
     PREFIX_PLUS,
-    COMA
+    COMA,
+    DO,
+    WHILE,
+    BREAK,
+    CONTINUE,
+    DIVISION
 
 }
 

@@ -9,6 +9,7 @@ Parser {
     HashMap<String, Map<String, Integer>> functionsAst;
     ListIterator<Token> tokenIterator;
     int conditionalCounter = 0;
+    int cyclesCounter = 0;
     private int startStackIndex = -4;
 
     public Parser(ArrayList<Token> tokens) {
@@ -45,6 +46,7 @@ Parser {
         Token startToken = currentToken;
         String name = currentToken.marking;
         Map<String, Integer> arguments = analiseInput();
+        currentToken = tokenIterator.next();
         compareWithExistDeclaration(currentToken.line, currentToken.column,name, arguments.values().size());
         if (currentToken.type == KeyWords.SEMICOLON){
             FunctionDeclaration declaration = new FunctionDeclaration(startToken,returnType,arguments,name, parentNode);
@@ -54,7 +56,7 @@ Parser {
         isFunctionDefined(name,currentToken.line, currentToken.column);
         Function root =  new Function(startToken,returnType,arguments,name, parentNode);
         functionsAst.put(root.name, root.inputParam);
-        currentToken = tokenIterator.next();
+
         if (currentToken.type != KeyWords.LCBRAC){
             throw new MySyntaxError(currentToken.line, currentToken.column,
                     "LCBRAC expected");
@@ -107,6 +109,29 @@ Parser {
                 case IF:
                     root.addChildNode(parseConditional(root));
                     break;
+                case DO:
+                    root.addChildNode(parseCycle(root));
+                    break;
+                case CONTINUE:
+                    try{
+                        root.getId();
+                    }catch (NullPointerException e){
+                        throw new MySyntaxError(currentToken.line, currentToken.column, "Use continue in cycles");
+                    }
+                    root.addChildNode(new ContinueInstruction(currentToken, root.getId()));
+                    tokenIterator.next();
+                    checkSemicolon();
+                    break;
+                case BREAK:
+                    try{
+                        root.getId();
+                    }catch (NullPointerException e){
+                        throw new MySyntaxError(currentToken.line, currentToken.column, "Use break in cycles");
+                    }
+                    root.addChildNode(new BreakInstruction(currentToken, root.getId()));
+                    tokenIterator.next();
+                    checkSemicolon();
+                    break;
                 case PREFIX_PLUS:
                     Assign assign;
                     try {
@@ -126,6 +151,7 @@ Parser {
                     root.addChildNode(newCompound);
                     break;
                 default:
+
                     if (currentToken.type != KeyWords.RCBRAC){
                         throw new MySyntaxError(currentToken.line, currentToken.column,
                                 "error syntax");
@@ -133,6 +159,31 @@ Parser {
                     return;
             }
         }
+    }
+
+    private void parseWhile(DoCycle cycle) {
+        Token token = tokenIterator.next();
+        checkOpenScope(token);
+        cycle.setExitCondition(parseMathHierarchy(cycle));
+        checkCloseScope(tokenIterator.previous());
+        tokenIterator.next();
+        tokenIterator.next();//rebase iterator
+        checkSemicolon();
+    }
+
+
+    private DoCycle parseCycle(Compound root) {
+        Token next = tokenIterator.next();
+         checkLCBRAC(next);
+         DoCycle doCycle = new DoCycle(next, root, root.stackIndex, cyclesCounter);
+         cyclesCounter++;
+         parseCompound(doCycle);
+         next = tokenIterator.next();
+         if (next.type!= KeyWords.WHILE){
+             throw  new MySyntaxError(next.line, next.column, "While expected after do part");
+         }
+         parseWhile(doCycle);
+         return doCycle;
     }
 
     private Node assignOrCall(Compound root) {
@@ -143,7 +194,9 @@ Parser {
         }
         if (currentToken.type == KeyWords.LPAR){
             tokenIterator.previous();
-            return parseCallFunction(root);
+            FunctionCall call = parseCallFunction(root);
+            tokenIterator.next();
+            return call;
         }
         throw new MySyntaxError(currentToken.line, currentToken.column,
                 "error syntax's");
@@ -153,16 +206,24 @@ Parser {
         Token currentToken = tokenIterator.previous();
         tokenIterator.next();
         String name = currentToken.marking;
-        FunctionCall functionCall = new FunctionCall(name, parseParameters(root), root);
+        FunctionCall functionCall = new FunctionCall(name, parseParameters(root), root, currentToken);
         return functionCall;
     }
-
-
-    private ArrayList<Term> parseParameters(Compound root) {
-        Token token = tokenIterator.next();
+    void checkOpenScope(Token token){
         if (token.type!= KeyWords.LPAR){
             throw new MySyntaxError(token.line, token.column, "Open scope expected");
         }
+    }
+
+    void checkCloseScope(Token token){
+        if (token.type != KeyWords.RPAR){
+            throw new MySyntaxError(token.line, token.column, "Close scope expected");
+        }
+    }
+
+    private ArrayList<Term> parseParameters(Compound root) {
+        Token token = tokenIterator.next();
+        checkOpenScope(token);
         ArrayList<Term> parameters = new ArrayList<>();
         token = tokenIterator.next();
         while (token.type == KeyWords.ID || token.type == KeyWords.NUM){
@@ -173,9 +234,7 @@ Parser {
             if (token.type != KeyWords.COMA) break;
             token = tokenIterator.next();
         }
-        if (token.type != KeyWords.RPAR){
-            throw new MySyntaxError(token.line, token.column, "Close scope expected");
-        }
+        checkCloseScope(token);
 
         return parameters;
     }
@@ -204,25 +263,28 @@ Parser {
         }
         tokenIterator.next();
         token = tokenIterator.next();
-        if (token.type != KeyWords.LCBRAC){
-            throw new MySyntaxError(token.line, token.column,
-                    "LCBRAC expected");
-        }
+        checkLCBRAC(token);
         Compound newCompound = new Compound(token, root, root.stackIndex);
         parseCompound(newCompound);
         result.setIfPart(newCompound);
         token = tokenIterator.next();
         if (token.type == KeyWords.ELSE){
             token = tokenIterator.next();
-            if (token.type != KeyWords.LCBRAC){
-                throw new MySyntaxError(token.line, token.column,
-                        "LCBRAC expected");
-            }
+            checkLCBRAC(token);
             newCompound = new Compound(token, root, root.stackIndex);
             parseCompound(newCompound);
             result.setElsePart(newCompound);
+            tokenIterator.next();
         }
+        tokenIterator.previous();
         return result;
+    }
+
+    public void checkLCBRAC(Token token){
+        if (token.type != KeyWords.LCBRAC){
+            throw new MySyntaxError(token.line, token.column,
+                    "LCBRAC expected");
+        }
     }
 
     private Assign parseAssign(Compound rootCompound) {
@@ -329,9 +391,24 @@ Parser {
         return term;
     }
     private Term analiseMathExpresion(Compound rootCompound){
+        Term term = parseExpresion(rootCompound);
+        tokenIterator.previous();
+        Token next = tokenIterator.next();
+        boolean toDeploy = false;
+        while (next.type == KeyWords.PLUS || next.type == KeyWords.MINUS){
+            Term nextTerm = parseExpresion(rootCompound);
+            term = new BinaryExpression(term, next.type, nextTerm);
+            next = tokenIterator.previous();
+            toDeploy = true;
+        }
+        if (toDeploy) tokenIterator.next();
+        return term;
+    }
+
+    private Term parseExpresion(Compound rootCompound){
         Term term = parseTerm(rootCompound);
         Token next = tokenIterator.next();
-        while (next.type == KeyWords.PLUS || next.type == KeyWords.MINUS){
+        while (next.type == KeyWords.DIVISION){
             Term nextTerm = parseTerm(rootCompound);
             term = new BinaryExpression(term, next.type, nextTerm);
             next = tokenIterator.next();

@@ -22,7 +22,7 @@ public class FunctionDeclaration extends Node{
     public boolean checkInParam(String name){
         if (inputParam == null)return false;
         try {
-            inputParam.get(name);
+            if(inputParam.get(name) == null) return false;
             return true;
         }catch (NullPointerException e){
             return false;

@@ -15,6 +15,9 @@ public class Function extends FunctionDeclaration{
 
     @Override
     public String generateCode() {
+        if (name.equals("main")){return "\n main proc\n" +
+                childCompound.generateCode()+
+                "main endp";}
         return "\n" + name + " proc\n" +
                 "push ebp\n" +
                 "mov ebp, esp\n" + childCompound.generateCode()+
