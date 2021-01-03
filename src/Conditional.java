@@ -23,7 +23,7 @@ public class Conditional extends Node{
         String result = expressionToComparison.generateCode()+
                 "\n pop eax\n" +
                 "cmp eax, 0\n" +
-                "jne _else"+pointing+"\n"+ifPart.generateCode()+
+                "je _else"+pointing+"\n"+ifPart.generateCode()+
                 "jmp _endIf"+pointing+
                 "\n_else"+pointing+":\n";
         if (elsePart != null) result+= elsePart.generateCode();

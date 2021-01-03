@@ -55,10 +55,10 @@ public class BinaryExpression extends Expression {
                         "pop eax;\n" +
                         "cmp eax, ebx\n" +
                         "jle _returnTrue"+pointersCounter+
-                        "\n push 1\n" +
+                        "\n push 0\n" +
                         "jmp _continueStatment"+pointersCounter+
                         "\n_returnTrue"+pointersCounter+":\n" +
-                        "push 0\n" +
+                        "push 1\n" +
                         "_continueStatment"+pointersCounter+":\n";
         }
         pointersCounter++;

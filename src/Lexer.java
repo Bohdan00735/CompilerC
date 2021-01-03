@@ -20,8 +20,8 @@ public class Lexer {
         for (int i = 0; i < decomposedText.length; i++) {
             String[] decomposedLine = decomposedText[i].split(" ");
             for (int j = 0; j < decomposedLine.length; j++) {
-                if (decomposedLine[j].equals("")) continue;
-                tokensText.add(determineToken(decomposedLine[j], i, j));
+                if (decomposedLine[j].equals("") || decomposedLine[j].equals("\t")) continue;
+                tokensText.add(determineToken(decomposedLine[j], i+1, j+1));
             }
         }
         return tokensText;

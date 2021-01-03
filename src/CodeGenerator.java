@@ -4,10 +4,7 @@ import java.io.IOException;
 public class  CodeGenerator {
     private AST ast;
     private String asmCode;
-
-
-
-
+    String path;
 
     private String masmTemplate =".586\n" +
             ".model flat, stdcall\n" +
@@ -19,8 +16,13 @@ public class  CodeGenerator {
             "includelib \\masm32\\lib\\user32.lib\n" +
             "include module.inc;";
 
-    public CodeGenerator(AST ast) {
+    public CodeGenerator(AST ast, String path) {
         this.ast = ast;
+        this.path = path;
+    }
+
+    public String getAsmCode() {
+        return asmCode;
     }
 
     public void generateCode(){
@@ -64,6 +66,6 @@ public class  CodeGenerator {
             result.append(tokens[i]+"/");
         }
         result.append("2-17-java-IO-81-Melniichuk.asm").toString();
-        return "KR-17-java-IO-81-Melniichuk.asm";
+        return "RGR-17-java-IO-81-Melniichuk.asm";
     }
 }

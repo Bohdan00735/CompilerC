@@ -13,14 +13,14 @@ public class Main {
             Parser parser = new Parser(lexer.decomposeTextOnTokens());
 
             try{
-                CodeGenerator codeGenerator = new CodeGenerator(parser.parse());
+                CodeGenerator codeGenerator = new CodeGenerator(parser.parse(), lexer.file);
                 codeGenerator.generateCode();
-
+                fileChooser.showResult(codeGenerator.getAsmCode());
                 codeGenerator.createFile(codeGenerator.createPass(fileChooser.filePath));
             }catch (MySyntaxError error){
                 JOptionPane.showMessageDialog(panel,
-                        String.format(error.getMessage()+" in (%d;%d)", error.line, error.column),
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                        String.format(error.getMessage()+" in row:%d, word:%d", error.line, error.column),
+                        "Error in "+ lexer.file, JOptionPane.ERROR_MESSAGE);
 
             }
 

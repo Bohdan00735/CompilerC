@@ -24,7 +24,7 @@ public class UnaryExpression extends Expression {
         return childTerm.generateCode() + "\n\r pop ebx;\n" +
                 "xor eax,eax;\n" +
                 "cmp ebx,0;\n" +
-                "setne al;\n" +
+                "sete al;\n" +
                 "push eax;\n\r";
     }
 }

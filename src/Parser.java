@@ -27,10 +27,13 @@ Parser {
                 switch (next.type){
                     case MAIN:
                         mainAst.addChildNode(analiseFunction(current.type, mainAst));
-                        continue;
+                        break;
 
                     case ID:
                         mainAst.addChildNode(analiseFunction(current.type, mainAst));
+                        break;
+                    default:
+                        throw new MySyntaxError(next.line, next.column, "name missed");
                 }
 
             }else {
@@ -362,7 +365,8 @@ Parser {
     private void checkSemicolon(){
         Token token = tokenIterator.previous();
         if (token.type != KeyWords.SEMICOLON){
-            throw new MySyntaxError(token.line, token.column,"Semicolon expected at the end of declaration");
+            token = tokenIterator.previous();
+            throw new MySyntaxError(token.line, token.column+1,"Semicolon expected at the end of declaration");
         }
         tokenIterator.next();
     }
@@ -408,30 +412,28 @@ Parser {
         Term term = analiseMathExpresion(rootCompound);
         tokenIterator.previous();
         Token next = tokenIterator.next();
-        boolean toDeploy = false;
         while (next.type == KeyWords.OR || next.type == KeyWords.LESS_EQUALS){
             Term nextTerm = analiseMathExpresion(rootCompound);
             term = new BinaryExpression(term, next.type, nextTerm, pointerCounter);
             pointerCounter++;
             next = tokenIterator.previous();
-            toDeploy = true;
+            tokenIterator.next();
         }
-        if (toDeploy) tokenIterator.next();
         return term;
     }
     private Term analiseMathExpresion(Compound rootCompound){
         Term term = parseExpresion(rootCompound);
         tokenIterator.previous();
         Token next = tokenIterator.next();
-        boolean toDeploy = false;
+
         while (next.type == KeyWords.PLUS || next.type == KeyWords.MINUS){
             Term nextTerm = parseExpresion(rootCompound);
             term = new BinaryExpression(term, next.type, nextTerm, pointerCounter);
             pointerCounter++;
             next = tokenIterator.previous();
-            toDeploy = true;
+            tokenIterator.next();
+
         }
-        if (toDeploy) tokenIterator.next();
         return term;
     }
 
